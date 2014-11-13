@@ -11,8 +11,8 @@ import repast.simphony.relogo.schedule.Setup;
 import ddosattack.ReLogoTurtle;
 
 class Host extends ReLogoTurtle {
-	def receivedPackets = 0
-	def sentPackets = 0
+	def received = 0
+	def sent = 0
 	
 	def step(){
 		def winner = minOneOf(neighbors()){
@@ -20,15 +20,14 @@ class Host extends ReLogoTurtle {
 		}
 		
 		face(winner)
-		label = "Received: " + receivedPackets + ", Sent: " + sentPackets
+		label = "Received: " + received + "\nSent: " + sent
 		
-		if(receivedPackets < 10000){
-			receivedPackets++
-			sentPackets++
-			if(receivedPackets > (sentPackets*10)){
-				hatchZombieHosts(1)
-				die()
-			}
+		received++
+		sent++
+		if(received > sent){
+			hatchZombieHosts(1)
+			die()
 		}
+		
 	}
 }

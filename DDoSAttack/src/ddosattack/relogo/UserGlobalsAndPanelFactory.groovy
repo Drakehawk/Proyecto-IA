@@ -8,6 +8,6 @@ public class UserGlobalsAndPanelFactory extends AbstractReLogoGlobalsAndPanelFac
 		addSliderWL("numHosts", "Number of hosts", 1, 1, 20, 10)
 		addSliderWL("numZombieHosts", "Number of Zombie Hosts", 1, 1, 10, 5)
 		
-		addMonitor("remainingHosts", "Remaining hosts", 5)
+		addMonitorWL("remainingHosts", "Remaining hosts", 5)
 	}
 }

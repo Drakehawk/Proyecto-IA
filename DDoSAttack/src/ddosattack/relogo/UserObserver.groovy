@@ -17,10 +17,17 @@ class UserObserver extends ReLogoObserver{
 		setDefaultShape(Host,"computer")
 		createHosts(numHosts){
 			setxy(randomXcor(),randomYcor())
+			size = 2
 		}
 		setDefaultShape(ZombieHost,"zombie")
 		createZombieHosts(numZombieHosts){
 			setxy(randomXcor(),randomYcor())
+			size = 2
+		}
+		setDefaultShape(Server,"computer")
+		createServers(1){
+			setxy(randomXcor(),randomYcor())
+			size = 4
 		}
 	} 	
 	
@@ -36,6 +43,10 @@ class UserObserver extends ReLogoObserver{
 
 	def remainingHosts(){
 		count(hosts())
+	}
+	
+	def timer(){
+		ticks()
 	}
 
 }

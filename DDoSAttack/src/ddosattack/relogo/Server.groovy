@@ -2,7 +2,6 @@ package ddosattack.relogo
 
 import static repast.simphony.relogo.Utility.*;
 import static repast.simphony.relogo.UtilityG.*;
-import net.sf.cglib.proxy.MethodProxy.CreateInfo;
 import repast.simphony.relogo.Plural;
 import repast.simphony.relogo.Stop;
 import repast.simphony.relogo.Utility;
@@ -11,26 +10,24 @@ import repast.simphony.relogo.schedule.Go;
 import repast.simphony.relogo.schedule.Setup;
 import ddosattack.ReLogoTurtle;
 
-class ZombieHost extends ReLogoTurtle {
+class Server extends ReLogoTurtle {
 	def received = 0
 	def sent = 0
+	def active = true
 	
 	def step(){
-		def winner = maxOneOf(neighbors()) {
-			count(hostsOn(it))
+		def winner = minOneOf(neighbors()){
+			count(zombieHostsOn(it))
 		}
 		
 		face(winner)
-		label = "Received: " + received + "\nSent: " + sent
 		
-		if(count(hostsHere())>0){
-			def infectee = infect(oneOf(hostsHere()))
-			infect(infectee)
+		label = "Received: " + received + "\nSent: " + sent + "\nActive service:" + active
+		
+		if(received > sent * 100){
+			active = false
+			label = "Service unavailable!"
 		}
-	}
-	
-	def infect(host){
-		host.sleep(1000)
-		host.received *= 10
+		
 	}
 }

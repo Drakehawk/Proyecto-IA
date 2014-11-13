@@ -413,6 +413,203 @@ public class ReLogoPatch extends BasePatch{
 	}
 
 	/**
+	 * Sprouts (makes) a number of new servers and then executes a set of commands on the
+	 * created servers.
+	 * 
+	 * @param number
+	 *            a number
+	 * @param closure
+	 *            a set of commands
+	 * @return created servers
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.Server")
+	public AgentSet<ddosattack.relogo.Server> sproutServers(int number, Closure closure) {
+		AgentSet<ddosattack.relogo.Server> result = new AgentSet<>();
+		AgentSet<Turtle> createResult = this.sprout(number,closure,"Server");
+		for (Turtle t : createResult){
+			if (t instanceof ddosattack.relogo.Server){
+				result.add((ddosattack.relogo.Server)t);
+			}
+		} 
+		return result;
+	}
+
+	/**
+	 * Sprouts (makes) a number of new servers and then executes a set of commands on the
+	 * created servers.
+	 * 
+	 * @param number
+	 *            a number
+	 * @param closure
+	 *            a set of commands
+	 * @return created servers
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.Server")
+	public AgentSet<ddosattack.relogo.Server> sproutServers(int number) {
+		return sproutServers(number,null);
+	}
+
+	/**
+	 * Returns an agentset of servers from the patch of the caller.
+	 * 
+	 * @return agentset of servers from the caller's patch
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.Server")
+	public AgentSet<ddosattack.relogo.Server> serversHere(){
+	  Grid grid = getMyObserver().getGrid();
+	  GridPoint gridPoint = grid.getLocation(this);
+	  AgentSet<ddosattack.relogo.Server> result = new AgentSet<ddosattack.relogo.Server>();
+	  for (Turtle t : Utility.getTurtlesOnGridPoint(gridPoint,getMyObserver(),"server")){
+			if (t instanceof ddosattack.relogo.Server)
+			result.add((ddosattack.relogo.Server)t);
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the agentset of servers on the patch at the direction (ndx, ndy) from the
+	 * caller.
+	 * 
+	 * @param nX
+	 *            a number
+	 * @param nY
+	 *            a number
+	 * @returns agentset of servers at the direction (nX, nY) from the caller
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.Server")
+	public AgentSet<ddosattack.relogo.Server> serversAt(Number nX, Number nY){
+		double dx = nX.doubleValue();
+		double dy = nY.doubleValue();
+		double[] displacement = {dx,dy};
+
+		try{
+		GridPoint gridPoint = Utility.getGridPointAtDisplacement(getGridLocationAsNdPoint(),displacement,getMyObserver());
+		AgentSet<ddosattack.relogo.Server> result = new AgentSet<ddosattack.relogo.Server>();						
+		for (Turtle t : Utility.getTurtlesOnGridPoint(gridPoint,getMyObserver(),"server")){
+			if (t instanceof ddosattack.relogo.Server)
+			result.add((ddosattack.relogo.Server)t);
+		}
+		return result;
+		}
+		catch(SpatialException e){
+			return new AgentSet<ddosattack.relogo.Server>();
+		}
+	}
+
+	/**
+	 * Returns an agentset of servers on a given patch.
+	 * 
+	 * @param p
+	 *            a patch
+	 * @return agentset of servers on patch p
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.Server")
+	public AgentSet<ddosattack.relogo.Server> serversOn(Patch p){
+		AgentSet<ddosattack.relogo.Server> result = new AgentSet<ddosattack.relogo.Server>();						
+		for (Turtle t : Utility.getTurtlesOnGridPoint(p.getGridLocation(),getMyObserver(),"server")){
+			if (t instanceof ddosattack.relogo.Server)
+			result.add((ddosattack.relogo.Server)t);
+		}
+		return result;
+	}
+
+	/**
+	 * Returns an agentset of servers on the same patch as a turtle.
+	 * 
+	 * @param t
+	 *            a turtle
+	 * @return agentset of servers on the same patch as turtle t
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.Server")
+	public AgentSet<ddosattack.relogo.Server> serversOn(Turtle t){
+		AgentSet<ddosattack.relogo.Server> result = new AgentSet<ddosattack.relogo.Server>();						
+		for (Turtle tt : Utility.getTurtlesOnGridPoint(Utility.ndPointToGridPoint(t.getTurtleLocation()),getMyObserver(),"server")){
+			if (tt instanceof ddosattack.relogo.Server)
+			result.add((ddosattack.relogo.Server)tt);
+		}
+		return result;
+	}
+
+	/**
+	 * Returns an agentset of servers on the patches in a collection or on the patches
+	 * that a collection of turtles are.
+	 * 
+	 * @param a
+	 *            a collection
+	 * @return agentset of servers on the patches in collection a or on the patches
+	 *         that collection a turtles are
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.Server")
+	public AgentSet<ddosattack.relogo.Server> serversOn(Collection c){
+
+		if (c == null || c.isEmpty()){
+			return new AgentSet<ddosattack.relogo.Server>();
+		}
+
+		Set<ddosattack.relogo.Server> total = new HashSet<ddosattack.relogo.Server>();
+		if (c.iterator().next() instanceof Turtle){
+			for (Object o : c){
+				if (o instanceof Turtle){
+					Turtle t = (Turtle) o;
+					total.addAll(serversOn(t));
+				}
+			}
+		}
+		else {
+			for (Object o : c){
+				if (o instanceof Patch){
+					Patch p = (Patch) o;
+					total.addAll(serversOn(p));
+				}
+			}
+		}
+		return new AgentSet<ddosattack.relogo.Server>(total);
+	}
+
+	/**
+	 * Queries if object is a server.
+	 * 
+	 * @param o
+	 *            an object
+	 * @return true or false based on whether the object is a server
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.Server")
+	public boolean isServerQ(Object o){
+		return (o instanceof ddosattack.relogo.Server);
+	}
+
+	/**
+	 * Returns an agentset containing all servers.
+	 * 
+	 * @return agentset of all servers
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.Server")
+	public AgentSet<ddosattack.relogo.Server> servers(){
+		AgentSet<ddosattack.relogo.Server> a = new AgentSet<ddosattack.relogo.Server>();
+		for (Object e : this.getMyObserver().getContext().getObjects(ddosattack.relogo.Server.class)) {
+			if (e instanceof ddosattack.relogo.Server){
+				a.add((ddosattack.relogo.Server)e);
+			}
+		}
+		return a;
+	}
+
+	/**
+	 * Returns the server with the given who number.
+	 * 
+	 * @param number
+	 *            a number
+	 * @return turtle number
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.Server")
+	public ddosattack.relogo.Server server(Number number){
+		Turtle turtle = Utility.turtleU(number.intValue(), getMyObserver());
+		if (turtle instanceof ddosattack.relogo.Server)
+			return (ddosattack.relogo.Server) turtle;
+		return null;
+	}
+
+	/**
 	 * Sprouts (makes) a number of new hosts and then executes a set of commands on the
 	 * created hosts.
 	 * 
