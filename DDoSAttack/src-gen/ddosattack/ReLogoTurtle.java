@@ -944,6 +944,341 @@ public class ReLogoTurtle extends BaseTurtle{
 	}
 
 	/**
+	 * Makes a directed packageFlow from a turtle to the caller then executes a set of
+	 * commands on the created packageFlow.
+	 * 
+	 * @param t
+	 *            a turtle
+	 * @param closure
+	 *            a set of commands
+	 * @return created packageFlow
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public ddosattack.relogo.PackageFlow createPackageFlowFrom(Turtle t, Closure closure){
+		ddosattack.relogo.PackageFlow link = (ddosattack.relogo.PackageFlow)this.getMyObserver().getNetwork("PackageFlow").addEdge(t,this);
+		if (closure != null){
+			this.ask(link,closure);
+		}
+		return link;
+	}
+
+	/**
+	 * Makes a directed packageFlow from a turtle to the caller.
+	 * 
+	 * @param t
+	 *            a turtle
+	 * @return created packageFlow
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public ddosattack.relogo.PackageFlow createPackageFlowFrom(Turtle t){
+			return createPackageFlowFrom(t,null);
+	}
+
+	/**
+	 * Makes directed packageFlows from a collection to the caller then executes a set
+	 * of commands on the created packageFlows.
+	 * 
+	 * @param a
+	 *            a collection
+	 * @param closure
+	 *            a set of commands
+	 * @return created packageFlows
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public AgentSet<ddosattack.relogo.PackageFlow> createPackageFlowsFrom(Collection<? extends Turtle> a, Closure closure){
+		AgentSet<ddosattack.relogo.PackageFlow> links = new AgentSet<ddosattack.relogo.PackageFlow>();
+		for(Turtle t : a){
+			links.add((ddosattack.relogo.PackageFlow)this.getMyObserver().getNetwork("PackageFlow").addEdge(t,this));
+		}
+		if (closure != null){
+			this.ask(links,closure);
+		}
+		return links;
+	}
+
+	/**
+	 * Makes directed packageFlows from a collection to the caller.
+	 * 
+	 * @param a
+	 *            a collection
+	 * @return created packageFlows
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public AgentSet<ddosattack.relogo.PackageFlow> createPackageFlowsFrom(Collection<? extends Turtle> a){
+		return createPackageFlowsFrom(a,null);
+	}
+
+	/**
+	 * Makes a directed packageFlow to a turtle from the caller then executes a set of
+	 * commands on the created packageFlow.
+	 * 
+	 * @param t
+	 *            a turtle
+	 * @param closure
+	 *            a set of commands
+	 * @return created packageFlow
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public ddosattack.relogo.PackageFlow createPackageFlowTo(Turtle t, Closure closure){
+		ddosattack.relogo.PackageFlow link = (ddosattack.relogo.PackageFlow)this.getMyObserver().getNetwork("PackageFlow").addEdge(this,t);
+		if (closure != null){
+			this.ask(link,closure);
+		}
+		return link;
+	}
+
+	/**
+	 * Makes a directed packageFlow to a turtle from the caller.
+	 * 
+	 * @param t
+	 *            a turtle
+	 * @return created packageFlow
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public ddosattack.relogo.PackageFlow createPackageFlowTo(Turtle t){
+			return createPackageFlowTo(t,null);
+	}
+
+	/**
+	 * Makes directed packageFlows to a collection from the caller then executes a set
+	 * of commands on the created packageFlows.
+	 * 
+	 * @param a
+	 *            a collection
+	 * @param closure
+	 *            a set of commands
+	 * @return created packageFlows
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public AgentSet<ddosattack.relogo.PackageFlow> createPackageFlowsTo(Collection<? extends Turtle> a, Closure closure){
+		AgentSet<ddosattack.relogo.PackageFlow> links = new AgentSet<ddosattack.relogo.PackageFlow>();
+		for(Object t : a){
+			if (t instanceof Turtle){
+				links.add((ddosattack.relogo.PackageFlow)this.getMyObserver().getNetwork("PackageFlow").addEdge(this,(Turtle)t));
+			}
+		}
+		if (closure != null){
+			this.ask(links,closure);
+		}
+		return links;
+	}
+
+	/**
+	 * Makes directed packageFlows to a collection from the caller.
+	 * 
+	 * @param a
+	 *            a collection
+	 * @return created packageFlows
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public AgentSet<ddosattack.relogo.PackageFlow> createPackageFlowsTo(Collection<? extends Turtle> a){
+		return createPackageFlowsTo(a,null);
+	}
+
+	/**
+	 * Queries if there is a directed packageFlow from a turtle to the caller.
+	 * 
+	 * @param t
+	 *            a turtle
+	 * @return true or false based on whether there is a directed packageFlow from
+	 *         turtle t to the caller
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public boolean inPackageFlowNeighborQ(Turtle t){
+		return this.getMyObserver().getNetwork("PackageFlow").isPredecessor(t, this);
+	}
+
+	/**
+	 * Returns the agentset with directed packageFlows to the caller.
+	 * 
+	 * @return agentset with directed packageFlows to the caller
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public AgentSet inPackageFlowNeighbors(){
+		AgentSet result = new AgentSet();
+		for(Object o : this.getMyObserver().getNetwork("PackageFlow").getPredecessors(this)){
+			result.add(o);
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the directed packageFlow from a turtle to the caller.
+	 * 
+	 * @param t
+	 *            a turtle
+	 * @return directed packageFlow from turtle t to the caller
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public ddosattack.relogo.PackageFlow inPackageFlowFrom(Turtle t){
+		return (ddosattack.relogo.PackageFlow)this.getMyObserver().getNetwork("PackageFlow").getEdge(t,this);
+	}
+
+	/**
+	 * Returns an agentset of directed packageFlows from other turtles to the caller.
+	 * 
+	 * @return agentset of directed packageFlows from other turtles to the caller
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public AgentSet<ddosattack.relogo.PackageFlow> myInPackageFlows(){
+		AgentSet<ddosattack.relogo.PackageFlow> result = new AgentSet<ddosattack.relogo.PackageFlow>();
+		for(Object o :  this.getMyObserver().getNetwork("PackageFlow").getInEdges(this)){
+			if (o instanceof ddosattack.relogo.PackageFlow){
+				result.add((ddosattack.relogo.PackageFlow) o);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Returns an agentset of directed packageFlows to other turtles from the caller.
+	 * 
+	 * @return agentset of directed packageFlows to other turtles from the caller
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public AgentSet<ddosattack.relogo.PackageFlow> myOutPackageFlows(){
+		AgentSet<ddosattack.relogo.PackageFlow> result = new AgentSet<ddosattack.relogo.PackageFlow>();
+		for(Object o :  this.getMyObserver().getNetwork("PackageFlow").getOutEdges(this)){
+			if (o instanceof ddosattack.relogo.PackageFlow){
+				result.add((ddosattack.relogo.PackageFlow) o);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Queries if there is a directed packageFlow to a turtle from the caller.
+	 * 
+	 * @param t
+	 *            a turtle
+	 * @return true or false based on whether there is a directed packageFlow to
+	 *         turtle t from the caller
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public boolean outPackageFlowNeighborQ(Turtle t){
+		return this.getMyObserver().getNetwork("PackageFlow").isPredecessor(this, t);
+	}
+
+	/**
+	 * Returns the agentset with directed packageFlows from the caller.
+	 * 
+	 * @return agentset with directed packageFlows from the caller
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public AgentSet outPackageFlowNeighbors(){
+		AgentSet result = new AgentSet();
+		for(Object o : this.getMyObserver().getNetwork("PackageFlow").getSuccessors(this)){
+			result.add(o);
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the directed packageFlow to a turtle from the caller.
+	 * 
+	 * @param t
+	 *            a turtle
+	 * @return directed packageFlow to turtle t from the caller
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public ddosattack.relogo.PackageFlow outPackageFlowTo(Turtle t){
+		return (ddosattack.relogo.PackageFlow)this.getMyObserver().getNetwork("PackageFlow").getEdge(this, t);
+	}
+
+	/**
+	 * Reports true if there is a packageFlow connecting t and the caller.
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public boolean packageFlowNeighborQ(Turtle t){
+		return this.getMyObserver().getNetwork("PackageFlow").isAdjacent(this, t);
+	}
+
+	/**
+	 * Returns the agentset of all turtles found at the other end of
+	 * packageFlows connected to the calling turtle.
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public AgentSet packageFlowNeighbors(){
+		AgentSet result = new AgentSet();
+		for(Object o : this.getMyObserver().getNetwork("PackageFlow").getAdjacent(this)){
+			result.add(o);
+		}
+		return result;
+	}
+
+	/**
+	 * Returns an agentset of the caller's packageFlows.
+	 * 
+	 * @return agentset of the caller's packageFlows
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public AgentSet<ddosattack.relogo.PackageFlow> myPackageFlows(){
+		AgentSet<ddosattack.relogo.PackageFlow> result = new AgentSet<ddosattack.relogo.PackageFlow>();
+		for(Object o : this.getMyObserver().getNetwork("PackageFlow").getEdges(this)){
+			if (o instanceof ddosattack.relogo.PackageFlow){
+				result.add((ddosattack.relogo.PackageFlow)o);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Queries if object is a packageFlow.
+	 * 
+	 * @param o
+	 *            an object
+	 * @return true or false based on whether the object is a packageFlow
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public boolean isPackageFlowQ(Object o){
+		return (o instanceof ddosattack.relogo.PackageFlow);
+	}
+
+	/**
+	 * Returns an agentset containing all packageFlows.
+	 * 
+	 * @return agentset of all packageFlows
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public AgentSet<ddosattack.relogo.PackageFlow> packageFlows(){
+		AgentSet<ddosattack.relogo.PackageFlow> a = new AgentSet<ddosattack.relogo.PackageFlow>();
+		for (Object e : this.getMyObserver().getContext().getObjects(ddosattack.relogo.PackageFlow.class)) {
+			if (e instanceof ddosattack.relogo.PackageFlow){
+				a.add((ddosattack.relogo.PackageFlow)e);
+			}
+		}
+		return a;
+	}
+
+	/**
+	 * Returns the packageFlow between two turtles.
+	 * 
+	 * @param oneEnd
+	 *            an integer
+	 * @param otherEnd
+	 *            an integer
+	 * @return packageFlow between two turtles
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public ddosattack.relogo.PackageFlow packageFlow(Number oneEnd, Number otherEnd) {
+		return (ddosattack.relogo.PackageFlow)(this.getMyObserver().getNetwork("PackageFlow").getEdge(turtle(oneEnd),turtle(otherEnd)));
+	}
+
+	/**
+	 * Returns the packageFlow between two turtles.
+	 * 
+	 * @param oneEnd
+	 *            a turtle
+	 * @param otherEnd
+	 *            a turtle
+	 * @return packageFlow between two turtles
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public ddosattack.relogo.PackageFlow packageFlow(Turtle oneEnd, Turtle otherEnd) {
+		return packageFlow(oneEnd.getWho(), otherEnd.getWho());
+	}
+
+	/**
 	 * Returns the value of the global variable numHosts.
 	 *
 	 * @return the value of the global variable numHosts

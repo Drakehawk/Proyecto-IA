@@ -410,6 +410,62 @@ public class ReLogoLink<T> extends BaseLink<T>	{
 	}
 
 	/**
+	 * Queries if object is a packageFlow.
+	 * 
+	 * @param o
+	 *            an object
+	 * @return true or false based on whether the object is a packageFlow
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public boolean isPackageFlowQ(Object o){
+		return (o instanceof ddosattack.relogo.PackageFlow);
+	}
+
+	/**
+	 * Returns an agentset containing all packageFlows.
+	 * 
+	 * @return agentset of all packageFlows
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public AgentSet<ddosattack.relogo.PackageFlow> packageFlows(){
+		AgentSet<ddosattack.relogo.PackageFlow> a = new AgentSet<ddosattack.relogo.PackageFlow>();
+		for (Object e : this.getMyObserver().getContext().getObjects(ddosattack.relogo.PackageFlow.class)) {
+			if (e instanceof ddosattack.relogo.PackageFlow){
+				a.add((ddosattack.relogo.PackageFlow)e);
+			}
+		}
+		return a;
+	}
+
+	/**
+	 * Returns the packageFlow between two turtles.
+	 * 
+	 * @param oneEnd
+	 *            an integer
+	 * @param otherEnd
+	 *            an integer
+	 * @return packageFlow between two turtles
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public ddosattack.relogo.PackageFlow packageFlow(Number oneEnd, Number otherEnd) {
+		return (ddosattack.relogo.PackageFlow)(this.getMyObserver().getNetwork("PackageFlow").getEdge(turtle(oneEnd),turtle(otherEnd)));
+	}
+
+	/**
+	 * Returns the packageFlow between two turtles.
+	 * 
+	 * @param oneEnd
+	 *            a turtle
+	 * @param otherEnd
+	 *            a turtle
+	 * @return packageFlow between two turtles
+	 */
+	@ReLogoBuilderGeneratedFor("ddosattack.relogo.PackageFlow")
+	public ddosattack.relogo.PackageFlow packageFlow(Turtle oneEnd, Turtle otherEnd) {
+		return packageFlow(oneEnd.getWho(), otherEnd.getWho());
+	}
+
+	/**
 	 * Returns the value of the global variable numHosts.
 	 *
 	 * @return the value of the global variable numHosts

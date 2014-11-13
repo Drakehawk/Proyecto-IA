@@ -6,5 +6,6 @@
     <projection id="UndirectedLinks" type="network"/>
     <projection id="Tracking Network" type="network"/>
     <projection id="UserLink" type="network"/>
+    <projection id="PackageFlow" type="network"/>
   </context>
 </context>
