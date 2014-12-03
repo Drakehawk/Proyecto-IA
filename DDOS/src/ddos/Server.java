@@ -21,6 +21,10 @@ public class Server {
         this.attackCounter = 0;
         this.requestCounter = 0;
     }
+
+    public int getId() {
+        return id;
+    }
     
     public void countMessages(String message){
         this.requestCounter++;

@@ -15,53 +15,101 @@ import java.util.Random;
 public class Node {
     
     private final int code;
+    private final int antNumbers;
+    private int positive, negative;
     //private int energy;
-    private final ArrayList<Integer> connections;
-    private final ArrayList<Integer> clients;
+    //First connection is always Server 
+    private ArrayList<Integer> connections;
+    private ArrayList<Integer> clients;
+    private ArrayList<Integer> suspectList;
+    //private final ArrayList<Integer> clients;
     
-    public Node(int code, ArrayList connections, ArrayList clients){
+    public Node(int code, int antNumbers){
         this.code = code;
-        //this.energy = 0;
-        this.connections = connections;  
-        this.clients = clients; 
+        this.positive = 0;
+        this.negative = 0;
+        this.antNumbers = antNumbers;
+        this.connections = new ArrayList();  
+        this.clients = new ArrayList();
+        this.suspectList = new ArrayList();
+        //this.clients = clients; 
+    }
+
+    public void setPositive(int positive) {
+        this.positive = positive;
+    }
+
+    public void setNegative(int negative) {
+        this.negative = negative;
     }
     
-    public boolean verifyMessage(int sender, String message){
-        if(!checkMessage(sender, message)){
-            return true;
-        }
-        return false;
+    public void addConnection(int node){
+        this.connections.add(node);
+    }
+    
+    public void addSuspect(int suspect){
+        this.suspectList.add(suspect);
+    }
+    
+    public int getSuspect(int index){
+        return this.suspectList.get(index);
+    }
+
+    public int getCode() {
+        return code;
+    }
+    
+    public int checkConnection(int node){
+        return this.connections.indexOf(node);
     }
     
     public boolean checkMessage(int sender, String message){
         int aux;
+        ArrayList<Ant> ants = new ArrayList();
+        ArrayList<Integer> tempAnts = new ArrayList();
+        Ant auxAnt;
         Random rand = new Random();
         
-        aux = rand.nextInt(clients.size());
+        //Generate random ants
+        while(ants.size()<antNumbers){
+            aux = rand.nextInt(connections.size());
+            auxAnt = new Ant();
+            if(tempAnts.indexOf(aux) == -1){
+                auxAnt.setPheromone(aux);
+                auxAnt.calculateEnergy(sender);
+                ants.add(auxAnt);
+                tempAnts.add(aux);
+            }
+        }
         
         //Check sender Id in ruleset
-        if(clients.get(aux) == sender){
-            //Check message is valid
-            return "Ok".equals(message);
+        for(int i=0; i<ants.size(); i++){
+            if(ants.get(i).getEnergy() == 0){
+                return "Ok".equals(message);
+            }
+            else if(ants.get(i).getEnergy() == 1){
+                if(positive < ants.get(i).getPheromone()){
+                    this.positive = ants.get(i).getPheromone();
+                }
+            }
+            else if(ants.get(i).getEnergy() == -1){
+                if(negative > ants.get(i).getPheromone()){
+                    this.negative = ants.get(i).getPheromone();
+                }
+            }
         }
-        else{
-            if(clients.get(aux) < sender){
-                return binarySearch(sender, 0, clients.indexOf(aux));
-            }
-            else{
-                return binarySearch(sender, clients.indexOf(aux), clients.size()-1);
-            }
-        }   
+        
+        return binarySearch(sender, positive, negative); 
     } 
     
     public boolean binarySearch(int value, int left, int right){
         int middle;
         while(left <= right){
             middle = (int) (Math.floor((right-left)/2)+left);
-            if(clients.get(middle) ==  value){
+            if(connections.get(middle) ==  value){
                 return true;
             }
-            if(value < clients.get(middle)){
+            if(value < connections.get(middle)){
                 right = middle - 1;
             }
             else{
