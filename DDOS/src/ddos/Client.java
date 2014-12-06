@@ -5,6 +5,9 @@
  */
 package ddos;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 /**
  *
  * @author Juancho
@@ -12,20 +15,39 @@ package ddos;
 public class Client {
     
     private final int id;
-    
-    
+    private ArrayList<Integer> connections;
     
     public Client(int id){
         this.id = id;
+        this.connections = new ArrayList();
+    }
+
+    public void addConnection(int node) {
+        this.connections.add(node);
     }
     
-    public String sendMessage(int attack){
-        String message = "";
-        if(attack == 0){
-            message = "Ok";
+    public int checkConnection(int node){
+        return this.connections.indexOf(node);
+    }
+    
+    public int getId() {
+        return id;
+    }
+    
+    public Message sendMessage(boolean attack){
+        //String messageText = "";
+        Message message;
+        Random rand = new Random();
+        int receiver;
+        
+        receiver = this.connections.get(rand.nextInt(this.connections.size()));
+        
+        if(attack){
+            message = new Message("Bad", this.id, receiver);
+            //messageText = "Bad";
         }
         else{
-            message = "Bad";
+            message = new Message("Ok", this.id, receiver);
         }
         return message;
     }
