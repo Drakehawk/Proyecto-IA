@@ -72,7 +72,7 @@ public class Node {
             aux = rand.nextInt(clients.size());
             auxAnt = new Ant();
             if(tempAnts.indexOf(aux) == -1){
-                auxAnt.addPheromone(aux);
+                auxAnt.setPheromone(aux);
                 auxAnt.calculateEnergySuspect(sender);
                 ants.add(auxAnt);
                 tempAnts.add(aux);
@@ -85,13 +85,13 @@ public class Node {
                 return "Ok".equals(message);
             }
             else if(ants.get(i).getEnergy() == 1){
-                if(positive < ants.get(i).getPheromone().get(0)){
-                    this.positive = ants.get(i).getPheromone().get(0);
+                if(positive < ants.get(i).getPheromone()){
+                    this.positive = ants.get(i).getPheromone();
                 }
             }
             else if(ants.get(i).getEnergy() == -1){
-                if(negative > ants.get(i).getPheromone().get(0)){
-                    this.negative = ants.get(i).getPheromone().get(0);
+                if(negative > ants.get(i).getPheromone()){
+                    this.negative = ants.get(i).getPheromone();
                 }
             }
         }

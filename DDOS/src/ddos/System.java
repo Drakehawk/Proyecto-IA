@@ -61,7 +61,6 @@ public class System {
             }   
         }
         
-        
         //Generate connections with clients, maximum 4  per client, minimum 2
         for(int i=0; i<numClients; i++){
             cons = rnd.nextInt(3) + 2;
@@ -75,7 +74,123 @@ public class System {
                 }
             }
         }
+    }
+    
+    public void simulate(int cycles, int attackF){
         
+        int aux;
+        
+        for(int i=0; i<cycles; i++){
+            
+            //Send packets
+            for(int j=0; j<clients.size(); j++){
+                aux = rnd.nextInt();
+                //Generate an attack by client j
+                if(attackF<aux){
+                    clients.get(j).sendMessage(true);
+                }
+            }
+        }
+    }
+    
+    //Detect Intruder
+    
+    //Generate keys
+    public void generateKeys(int alertedNodes){
+        int keyLen;
+        boolean keysLock;
+        ArrayList<String> truthTable = new ArrayList();
+        ArrayList<Expression> expression = new ArrayList();
+        ArrayList<Integer> keys = new ArrayList();
+        ArrayList<Binary> binaryAuxList;
+        //Expression expressionAux;
+        Binary binaryAux;
+        //Ant antAgent;
+        ArrayList<Ant> agents = new ArrayList();
+        
+        //Number of bits for representation
+        keyLen = (int) Math.ceil(Math.log(alertedNodes)/Math.log(2));
+        
+        //Generate binary values for each node AKA Truth table
+        for(int i=0; i<alertedNodes; i++){
+            truthTable.add(toBinaryStringOfLength(i, keyLen));
+        }
+        
+        //Generate Array of variables. ej; S1, S2, S3
+        binaryAuxList = new ArrayList();
+        for(int i=0; i<keyLen*2; i++){
+            binaryAuxList.add(new Binary(i, i%2));
+            //expressionAux = new Expression(new ArrayList<>)
+            expression.add(new Expression(binaryAuxList));
+        }
+        
+        //Combine variables
+        for(int i=2; i<keyLen; i++){
+            for(int j=0; j<keyLen*2; j++){
+                binaryAux = expression.get(j).getIndexList().get(0);
+                for(int k=j+1; k<keyLen*2; k++){
+                    //Obviate same variable combination (S1 * ¬S1) 
+                    if(j%2 == 0 && k == j+1){
+                        continue;
+                    }                    
+                    binaryAuxList = new ArrayList();
+                    binaryAuxList.add(binaryAux);
+                    binaryAuxList.add(expression.get(k).getIndexList().get(0));
+                    expression.add(new Expression(binaryAuxList));
+                }
+            }
+        }
+        
+        //Solve key problem
+        //Generate ants
+        for(int i=0; i<alertedNodes; i++){
+            agents.add(new Ant(expression, truthTable, generateTrail(expression.size()-1)));
+        }
+        
+        //Calculate minimun key
+        keysLock = false;
+        while(keysLock){
+            for(int i=0; i<agents.size(); i++){
+                //Minimum value found
+                if(agents.get(i).updateTrail() == alertedNodes){
+                    keys = agents.get(i).getTrail();
+                    keysLock = true;
+                    break;
+                }
+            }
+        }
+        
+        //Distribute keys
+        
+    }
+    
+    private ArrayList<Integer> generateTrail(int max){
+        ArrayList<Integer> trail = new ArrayList();
+        Random rnd = new Random();
+        int a, b;
+        
+        a = rnd.nextInt(max);
+        b = rnd.nextInt(max-a) + a + 1;
+        
+        trail.add(a);
+        trail.add(b);
+        
+        return trail;
+    }
+    
+    //Transform int into binary String
+    private static String toBinaryStringOfLength(int value, int length) {
+        String binaryString = Integer.toBinaryString(value); 
+        StringBuilder leadingZeroes = new StringBuilder();
+        for(int index = 0; index < length - binaryString.length(); index++) {
+            leadingZeroes = leadingZeroes.append("0");
+        }
+
+        return leadingZeroes + binaryString;
+    }
+}
+
+
         //Generate random node connections in 3 layers
 //        for(int i=0; i<numNodes; i++){
 //            //First layer
@@ -124,89 +239,3 @@ public class System {
 //                }
 //            }
 //        }
-    }
-    
-    public void simulate(int cycles, int attackF){
-        
-        int aux;
-        
-        for(int i=0; i<cycles; i++){
-            
-            //Send packets
-            for(int j=0; j<clients.size(); j++){
-                aux = rnd.nextInt();
-                //Generate an attack by client j
-                if(attackF<aux){
-                    clients.get(j).sendMessage(true);
-                }
-            }
-        }
-    }
-    
-    //Detect Intruder
-    
-    //Generate keys
-    public void generateKeys(int alertedNodes){
-        int keyLen;
-        boolean auxBool;
-        ArrayList<String> truthTable = new ArrayList();
-        ArrayList<Expression> expression = new ArrayList();
-        ArrayList<Binary> binaryAuxList;
-        //Expression expressionAux;
-        Binary binaryAux;
-        Ant antAgent;
-        ArrayList<Ant> agents = new ArrayList();
-        
-        //Number of bits for representation
-        keyLen = (int) Math.ceil(Math.log(alertedNodes)/Math.log(2));
-        
-        //Generate binary values for each node AKA Truth table
-        for(int i=0; i<alertedNodes; i++){
-            truthTable.add(toBinaryStringOfLength(i, keyLen));
-        }
-        
-        //Generate Array of variables. ej; S1, S2, S3
-        binaryAuxList = new ArrayList();
-        for(int i=0; i<keyLen*2; i++){
-            binaryAuxList.add(new Binary(i, i%2));
-            //expressionAux = new Expression(new ArrayList<>)
-            expression.add(new Expression(binaryAuxList));
-        }
-        
-        //Combine variables
-        for(int i=2; i<keyLen; i++){
-            for(int j=0; j<keyLen*2; j++){
-                binaryAux = expression.get(j).getIndexList().get(0);
-                for(int k=j+1; k<keyLen*2; k++){
-                    //Obviate same variable combination (S1 * ¬S1) 
-                    if(j%2 == 0 && k == j+1){
-                        continue;
-                    }                    
-                    binaryAuxList = new ArrayList();
-                    binaryAuxList.add(binaryAux);
-                    binaryAuxList.add(expression.get(k).getIndexList().get(0));
-                    expression.add(new Expression(binaryAuxList));
-                }
-            }
-        }
-        
-        //Solve key problem
-        //Generate ants
-        for(int i=0; i<alertedNodes; i++){
-            
-        }
-        
-        
-    }
-    
-    //Transform int into binary String
-    private static String toBinaryStringOfLength(int value, int length) {
-        String binaryString = Integer.toBinaryString(value); 
-        StringBuilder leadingZeroes = new StringBuilder();
-        for(int index = 0; index < length - binaryString.length(); index++) {
-            leadingZeroes = leadingZeroes.append("0");
-        }
-
-        return leadingZeroes + binaryString;
-    }
-}
