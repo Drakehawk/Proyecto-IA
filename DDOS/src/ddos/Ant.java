@@ -15,11 +15,11 @@ public class Ant {
     
     //private int energy, positive, negative;
     private int energy, pheromone;
-    private ArrayList<Expression> expressions;
+    private static ArrayList<Expression> expressions;
     
     //private ArrayList<Integer> pheromone;
     private ArrayList<Integer> trail;
-    private ArrayList<String> truthTable;
+    private static ArrayList<String> truthTable;
     
     public Ant(){
         this.energy = 0;
@@ -33,13 +33,6 @@ public class Ant {
         this.trail = trail;
     }
     
-//    public Ant(int maxValues){
-//        this.energy = 0;
-//        this.positive = 0;
-//        this.negative = maxValues;
-//        this.pheromone = new ArrayList();
-//    }
-
     public void setEnergy(int energy) {
         this.energy = energy;
     }
@@ -48,10 +41,6 @@ public class Ant {
         this.pheromone = pheromone;
     }
     
-//    public void addPheromone(int pheromone) {
-//        this.pheromone.add(pheromone);
-//    }
-
     public int getEnergy() {
         return energy;
     }
@@ -59,10 +48,6 @@ public class Ant {
     public int getPheromone() {
         return pheromone;
     }
-
-//    public ArrayList<Integer> getPheromone() {
-//        return pheromone;
-//    }
 
     public ArrayList<Integer> getTrail() {
         return trail;
@@ -87,35 +72,36 @@ public class Ant {
         ArrayList<Integer> auxTrail;
        
         //First evaluation
-        if(this.energy == 0){
-            this.energy = calculateEnergyBoolean(this.trail);
+        if(energy == 0){
+            energy = calculateEnergyBoolean(trail);
         }
         //Update trail
         else{
-            while(this.energy > energyAux){
-                if(counterTrail < this.trail.size()){
+            while(energy > energyAux){
+                if(counterTrail < trail.size()){
+                    //Select trail index to replace in current trail. ej {2,5}
+                    //Replaces 2 with 0 or 1 and replaces 5 with 6 or more
                     if(counterTrail == 0){
                         start = 0;
-                        end = this.trail.get(1);
+                        end = trail.get(1);
                     }
-                    if(counterTrail == this.trail.size()-1){
-                        start = this.trail.get(this.trail.indexOf(counterTrail) - 1);
-                        end = this.expressions.size();
+                    if(counterTrail == trail.size()-1){
+                        start = trail.get(trail.indexOf(counterTrail) - 1);
+                        end = expressions.size();
                     }
                     else{
-                        start = this.trail.get(this.trail.indexOf(counterTrail) - 1);
-                        end = this.trail.get(this.trail.indexOf(counterTrail) + 1);
+                        start = trail.get(trail.indexOf(counterTrail) - 1);
+                        end = trail.get(trail.indexOf(counterTrail) + 1);
                     }
-                    auxTrail = this.trail;
+                    auxTrail = trail;
                     for(int i=start; i<end; i++){
-                        //if(auxExp != this.expressions.get(i)){
-                        auxExp = this.expressions.get(i);
+                        auxExp = expressions.get(i);
                         if(checkTrail(auxExp)){
-                            auxTrail.set(counterTrail, this.expressions.indexOf(auxExp));
+                            auxTrail.set(counterTrail, expressions.indexOf(auxExp));
                             energyAux = calculateEnergyBoolean(auxTrail);
                         }
-                        if(energyAux > this.energy){
-                            this.trail = auxTrail;
+                        if(energyAux > energy){
+                            trail = auxTrail;
                             break;
                         }
                     }
@@ -123,43 +109,43 @@ public class Ant {
                 }
                 //Add new expression
                 else{
-                    for(int i=0; i<this.trail.size(); i++){
-                       if(this.trail.get(i) != i){
-                           this.trail.add(i,i);
+                    for(int i=0; i<trail.size(); i++){
+                       if(trail.get(i) != i){
+                           trail.add(i,i);
                            counterTrail = 0;
-                           energyAux = calculateEnergyBoolean(this.trail);
+                           energyAux = calculateEnergyBoolean(trail);
                        }
                     }
                 }
             }
-            this.energy = energyAux;
+            energy = energyAux;
         }
-        return this.energy;
+        return energy;
     }
     
     //Temporal solution method for package detection
     public void calculateEnergySuspect (int suspect){
-        if(this.pheromone == suspect) this.energy = 0;
+        if(pheromone == suspect) energy = 0;
         
-        else if(this.pheromone < suspect) this.energy = 1; 
+        else if(pheromone < suspect) energy = 1; 
         
-        else this.energy = -1;
+        else energy = -1;
     }
     
     //Temporal solution method for boolean optimization
-    public int calculateEnergyBoolean(ArrayList<Integer> trail){
+    public static int calculateEnergyBoolean(ArrayList<Integer> trail){
         ArrayList<Expression> auxExpression = new ArrayList();
         String nodeValue;
         int counter = 0;
         
         //Get expressions for trail 
         for(int i=0; i<trail.size(); i++){
-            auxExpression.add(this.expressions.get(trail.get(i)));
+            auxExpression.add(expressions.get(trail.get(i)));
         }
         
         //Evaluate each input in truth table
-        for(int i=0; i<this.truthTable.size(); i++){
-            nodeValue = this.truthTable.get(i);
+        for(int i=0; i<truthTable.size(); i++){
+            nodeValue = truthTable.get(i);
             if(evaluate(nodeValue, auxExpression)){
                 counter++;
             }
@@ -168,7 +154,7 @@ public class Ant {
         return counter;
     }
     
-    public boolean evaluate(String value, ArrayList<Expression> expressions){
+    public static boolean evaluate(String value, ArrayList<Expression> expressions){
         
         //Expression auxExp;
         Boolean result = false;

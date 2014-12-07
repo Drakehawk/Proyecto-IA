@@ -16,51 +16,58 @@ public class Node {
     
     private final int code;
     private final int antNumbers;
-    private int positive, negative;
+    //private int positive, negative;
     //private ArrayList<Integer> connections;
-    private ArrayList<Integer> clients;
-    private ArrayList<Integer> suspectList;
+    private static ArrayList<Integer> clients;
+    private static ArrayList<Integer> suspectList;
+    //private Expression groupKey;
+    private String groupKey;
+    private String auxKey;
+    //private Expression auxKey;
     
     public Node(int code, int antNumbers){
         this.code = code;
-        this.positive = 0;
-        this.negative = 0;
+        //this.positive = 0;
+        //this.negative = 0;
         this.antNumbers = antNumbers;
         //this.connections = new ArrayList();  
         this.clients = new ArrayList();
         this.suspectList = new ArrayList();
     }
 
-    public void setPositive(int positive) {
-        this.positive = positive;
+//    public void setPositive(int positive) {
+//        this.positive = positive;
+//    }
+//
+//    public void setNegative(int negative) {
+//        this.negative = negative;
+//    }
+
+    public void setGroupKey(String groupKey) {
+        this.groupKey = groupKey;
     }
 
-    public void setNegative(int negative) {
-        this.negative = negative;
+    public void setAuxKey(String auxKey) {
+        this.auxKey = auxKey;
     }
-    
-//    public void addConnection(int node){
-//        this.connections.add(node);
-//    }
-    
+        
     public void addSuspect(int suspect){
-        this.suspectList.add(suspect);
+        suspectList.add(suspect);
     }
     
-    public int getSuspect(int index){
-        return this.suspectList.get(index);
+    public ArrayList<Integer> getSuspect(){
+        return suspectList;
     }
 
     public int getCode() {
         return code;
     }
     
-//    public int checkConnection(int node){
-//        return this.connections.indexOf(node);
-//    }
-    
     public boolean checkMessage(int sender, String message){
         int aux;
+        int positive, negative;
+        positive = 0;
+        negative = 0;
         ArrayList<Ant> ants = new ArrayList();
         ArrayList<Integer> tempAnts = new ArrayList();
         //ArrayList<Integer> pheromone = new ArrayList();
@@ -86,12 +93,12 @@ public class Node {
             }
             else if(ants.get(i).getEnergy() == 1){
                 if(positive < ants.get(i).getPheromone()){
-                    this.positive = ants.get(i).getPheromone();
+                    positive = ants.get(i).getPheromone();
                 }
             }
             else if(ants.get(i).getEnergy() == -1){
                 if(negative > ants.get(i).getPheromone()){
-                    this.negative = ants.get(i).getPheromone();
+                    negative = ants.get(i).getPheromone();
                 }
             }
         }
@@ -99,7 +106,7 @@ public class Node {
         return binarySearch(sender, positive, negative); 
     } 
     
-    public boolean binarySearch(int value, int left, int right){
+    public static boolean binarySearch(int value, int left, int right){
         int middle;
         while(left <= right){
             middle = (int) (Math.floor((right-left)/2)+left);
@@ -115,4 +122,36 @@ public class Node {
         }        
         return false;
     }
+    
+    public boolean checkSign(String sign) throws Exception{
+        return cypher(sign, auxKey).equals(groupKey);
+    }
+    
+    public String getSign() throws Exception{
+        return cypher(groupKey,auxKey);
+    }
+    
+    public static String cypher(String message, String key) throws Exception{
+        String cypherMessage = "";
+        int counter = 0;
+        if(message.length()>=key.length()){
+            for(int i=0; i<message.length(); i++){   
+                if(i>key.length()){
+                    counter = 0;
+                }
+                if(message.charAt(i) == key.charAt(counter)){
+                    cypherMessage = cypherMessage.concat("0");
+                }
+                else{
+                    cypherMessage = cypherMessage.concat("1");
+                }
+                counter++;
+            }
+        }
+        else{
+            throw new Exception("Cypher error: Key is bigger than message");
+        }
+        return cypherMessage; 
+    }
+    
 }

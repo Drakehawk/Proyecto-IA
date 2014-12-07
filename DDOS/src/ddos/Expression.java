@@ -27,21 +27,31 @@ public class Expression {
         this.indexList.add(expression);
     }
     
-//    public Binary getExpression(int index){
-//        return this.indexList.get(index);
-//    }
-    
-    
     public boolean evaluate(String value){
         boolean expValue;
         expValue = true;
         
         //AND every value in expression. ej: S1*S2*S3
-        for(int i=0; i<this.indexList.size(); i++){
-            expValue = this.indexList.get(i).getValue(value.charAt(i)) && expValue;
+        for(int i=0; i<indexList.size(); i++){
+            expValue = indexList.get(i).getValue(value.charAt(i)) && expValue;
         }
         
         return expValue;
     }
     
+    public String evaluateString(String value){
+        String expValue;
+        expValue = "";
+        
+        //Parse expression to binary String with value. ej S1S2S3 => 001
+        for(int i=indexList.size()-1; i>=0; i--){
+            if(indexList.get(i).getValue(value.charAt(i))){
+                expValue = expValue.concat("1");
+            }
+            else{
+                expValue = expValue.concat("0");
+            }
+        }
+        return expValue;
+    }    
 }

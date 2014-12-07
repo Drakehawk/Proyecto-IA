@@ -21,14 +21,14 @@ public class Binary {
     public int getIndex() {
         return index;
     }
-
-//    public int getNot() {
-//        return not;
-//    }
+    
+    public int getNot() {
+        return not;
+    }
 //      
     //1 Equals is negated (¬) 0 otherwise
     public boolean getValue(char value){
-        if(this.not == 1){
+        if(not == 1){
             if(value == '0'){
                 return true;
             }

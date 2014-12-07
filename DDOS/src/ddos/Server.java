@@ -26,13 +26,11 @@ public class Server {
         return id;
     }
     
-    public void countMessages(String message){
+    public boolean countMessages(String message){
         this.requestCounter++;
         if(message.equals("Bad")){
             this.attackCounter++;
         }
-        if(attackCounter == maxCounter){
-           //Server dies 
-        }
+        return attackCounter != maxCounter;
     }
 }

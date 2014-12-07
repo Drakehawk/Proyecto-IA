@@ -11,7 +11,7 @@ package ddos;
  */
 public class Message {
     
-    private String message;
+    private final String message;
     private int sender, receiver;
     
     public Message(String message, int sender, int receiver){

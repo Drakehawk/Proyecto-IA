@@ -96,23 +96,29 @@ public class System {
     //Detect Intruder
     
     //Generate keys
-    public void generateKeys(int alertedNodes){
-        int keyLen;
+    public int detectAttacker(ArrayList<Node> alertedNodes) throws Exception{
+        int keyLen, key, a, max, groupSize;
         boolean keysLock;
+        
         ArrayList<String> truthTable = new ArrayList();
-        ArrayList<Expression> expression = new ArrayList();
+        ArrayList<Expression> expressions = new ArrayList();
         ArrayList<Integer> keys = new ArrayList();
         ArrayList<Binary> binaryAuxList;
-        //Expression expressionAux;
-        Binary binaryAux;
-        //Ant antAgent;
         ArrayList<Ant> agents = new ArrayList();
+        ArrayList<List> suspectListArray = new ArrayList();
+        ArrayList<Integer> suspect = new ArrayList();
+        
+        String groupKey;
+        Binary binaryAux;
+        List suspectList;
+        
+        Random rnd = new Random();
         
         //Number of bits for representation
-        keyLen = (int) Math.ceil(Math.log(alertedNodes)/Math.log(2));
+        keyLen = (int) Math.ceil(Math.log(alertedNodes.size())/Math.log(2));
         
         //Generate binary values for each node AKA Truth table
-        for(int i=0; i<alertedNodes; i++){
+        for(int i=0; i<alertedNodes.size(); i++){
             truthTable.add(toBinaryStringOfLength(i, keyLen));
         }
         
@@ -121,13 +127,13 @@ public class System {
         for(int i=0; i<keyLen*2; i++){
             binaryAuxList.add(new Binary(i, i%2));
             //expressionAux = new Expression(new ArrayList<>)
-            expression.add(new Expression(binaryAuxList));
+            expressions.add(new Expression(binaryAuxList));
         }
         
         //Combine variables
         for(int i=2; i<keyLen; i++){
             for(int j=0; j<keyLen*2; j++){
-                binaryAux = expression.get(j).getIndexList().get(0);
+                binaryAux = expressions.get(j).getIndexList().get(0);
                 for(int k=j+1; k<keyLen*2; k++){
                     //Obviate same variable combination (S1 * ¬S1) 
                     if(j%2 == 0 && k == j+1){
@@ -135,16 +141,16 @@ public class System {
                     }                    
                     binaryAuxList = new ArrayList();
                     binaryAuxList.add(binaryAux);
-                    binaryAuxList.add(expression.get(k).getIndexList().get(0));
-                    expression.add(new Expression(binaryAuxList));
+                    binaryAuxList.add(expressions.get(k).getIndexList().get(0));
+                    expressions.add(new Expression(binaryAuxList));
                 }
             }
         }
         
         //Solve key problem
         //Generate ants
-        for(int i=0; i<alertedNodes; i++){
-            agents.add(new Ant(expression, truthTable, generateTrail(expression.size()-1)));
+        for(int i=0; i<alertedNodes.size(); i++){
+            agents.add(new Ant(expressions, truthTable, generateTrail(expressions.size()-1)));
         }
         
         //Calculate minimun key
@@ -152,16 +158,67 @@ public class System {
         while(keysLock){
             for(int i=0; i<agents.size(); i++){
                 //Minimum value found
-                if(agents.get(i).updateTrail() == alertedNodes){
+                if(agents.get(i).updateTrail() == alertedNodes.size()){
                     keys = agents.get(i).getTrail();
                     keysLock = true;
                     break;
                 }
             }
         }
+                
+        //Distribute groupKey
+        int groupKeySize = 0;
+        for(int i=0; i<keys.size(); i++){
+            if(groupKeySize < expressions.get(keys.get(i)).getIndexList().size()){
+                groupKeySize = expressions.get(keys.get(i)).getIndexList().size();
+            }
+        }
         
-        //Distribute keys
+        a = (int)(Math.pow(2,groupKeySize-1));
+        max = (int)(Math.pow(2,groupKeySize))-1;
+        groupKey = toBinaryStringOfLength(rnd.nextInt(max-a)+a+1,0);
+        for(int i=0; i<alertedNodes.size(); i++){
+            alertedNodes.get(i).setGroupKey(groupKey);
+        }
+
+        //Distribute auxiliary keys
+        groupSize = (int)(Math.floor(alertedNodes.size()/keys.size()))-1;
+        key = 0;
+        for(int i=0; i<alertedNodes.size(); i++){            
+            max = (int)(Math.pow(2,expressions.get(keys.get(key)).getIndexList().size()))-1;
+            if(i%groupSize == 0){
+                key++;
+            }
+            if(key == keys.size()){
+                key = 0;
+            }
+            alertedNodes.get(i).setAuxKey(expressions.get(keys.get(key)).evaluateString(toBinaryStringOfLength(rnd.nextInt(max),0)));
+        }
         
+        //Send suspect list
+        for(int i=0; i<alertedNodes.size(); i+=groupSize){
+            suspectList = new List(alertedNodes.get(i).getSuspect(),alertedNodes.get(i).getSign());
+            for(int j=i+1; j<groupSize+i; j++){
+                //Check suspect list and add own
+                if(alertedNodes.get(j).checkSign(suspectList.getSign())){
+                    suspectList.addSuspect(alertedNodes.get(j).getSuspect());
+                    suspectList.setSign(alertedNodes.get(j).getSign());
+                }
+                else{
+                    throw new Exception("Invalid suspect List!!!");
+                }
+            }
+            suspectListArray.add(suspectList);
+        }
+        
+        //Check lists and deteck attack
+        //Add all list in one
+        suspectList = new List();
+        for(int i=0; i<suspectListArray.size(); i++){
+            suspectList.addSuspect(suspectListArray.get(i).getSuspects());
+        }
+        
+        return suspectList.getAttacker();
     }
     
     private ArrayList<Integer> generateTrail(int max){
@@ -189,53 +246,3 @@ public class System {
         return leadingZeroes + binaryString;
     }
 }
-
-
-        //Generate random node connections in 3 layers
-//        for(int i=0; i<numNodes; i++){
-//            //First layer
-//            if(i<layer){
-//                for(int j=0; j<2; j++){
-//                    while(true){
-//                        aux = rnd.nextInt(layer);
-//                        if(j == 1){
-//                            aux = aux + layer - 1;
-//                        }
-//                        if(aux != nodes.get(i).getCode() && nodes.get(i).checkConnection(aux) == -1){
-//                            nodes.get(i).addConnection(aux);
-//                            break;
-//                        }
-//                    }
-//                }
-//            }
-//            //Second layer
-//            if(i>=layer && i<numNodes-layer){
-//                for(int j=0; j<2; j++){
-//                    while(true){
-//                        aux = rnd.nextInt(layer) + layer;
-//                        if(j == 1){
-//                            aux = rnd.nextInt(layer) + layer*2+auxLayer;
-//                        }
-//                        if(aux != nodes.get(i).getCode() && nodes.get(i).checkConnection(aux) == -1){
-//                            nodes.get(i).addConnection(aux);
-//                            break;
-//                        }
-//                    }
-//                }
-//            }
-//            //Last layer
-//            else{   
-//                for(int j=0; j<2; j++){
-//                    while(true){
-//                        aux = rnd.nextInt(layer) + layer*2+auxLayer; 
-//                        if(j == 1){
-//                            aux = server.getId();
-//                        }
-//                        if(aux != nodes.get(i).getCode() && nodes.get(i).checkConnection(aux) == -1){
-//                            nodes.get(i).addConnection(aux);
-//                            break;
-//                        }
-//                    }
-//                }
-//            }
-//        }

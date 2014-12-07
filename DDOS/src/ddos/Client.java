@@ -40,14 +40,14 @@ public class Client {
         Random rand = new Random();
         int receiver;
         
-        receiver = this.connections.get(rand.nextInt(this.connections.size()));
+        receiver = connections.get(rand.nextInt(connections.size()));
         
         if(attack){
-            message = new Message("Bad", this.id, receiver);
+            message = new Message("Bad", id, receiver);
             //messageText = "Bad";
         }
         else{
-            message = new Message("Ok", this.id, receiver);
+            message = new Message("Ok", id, receiver);
         }
         return message;
     }
