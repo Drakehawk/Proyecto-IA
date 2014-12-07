@@ -12,91 +12,145 @@ import java.util.Random;
  *
  * @author Juancho
  */
-public class System {
-    ArrayList<Node> nodes;
-    ArrayList<Node> alertedNodes;
-    ArrayList<Client> clients;
+public class Simulation {
+    static ArrayList<Node> nodes;
+    static ArrayList<Client> clients;
+    
     Server server;
     Node node;
     Client client;
-    Random rnd = new Random();
-    int numNodes, antNumbers, numClients;
+    static Random rnd = new Random();
     
+    private int numNodes, antNumbers, numClients, numAttacks, numPackets;
     
-    public System(int nodes){
+    public Simulation(int nodes, int antNumbers, int numClients){
+        Simulation.nodes = new ArrayList();
+        Simulation.clients = new ArrayList();
         this.numNodes = nodes;
+        this.antNumbers = antNumbers;
+        this.numClients = numClients;
+    }
+
+    public int getNumAttacks() {
+        return numAttacks;
+    }
+
+    public int getNumPackets() {
+        return numPackets;
     }
     
-    public void initalize(){
-        int aux, cons;
-        ArrayList<Integer> auxArray = new ArrayList(); //Array of generated ids
-        Node auxNode;
+    public void initalize() throws Exception{
+        int nodePos, conections;
+        ArrayList<Integer> nodeIds = new ArrayList();
         
-//      layer = (int) Math.floor(numNodes/3);
-//      auxLayer = layer%3;
-        aux = rnd.nextInt(999) + 1000;
-        server = new Server(aux);
-        auxArray.add(aux);
+        numAttacks = 0;
+        numPackets = 0; 
+        //Server creation. It alwas will be id 1
+        //nodeId = rnd.nextInt(999) + 1000;
+        //nodeId = rnd.nextInt(999) + 1000;
+        server = new Server(1);
+        //nodeIds.add(nodeId);
         
         //Generate nodes
         for(int i=0; i<numNodes; i++){
-            aux = rnd.nextInt(999) + 1000;
-            if(auxArray.indexOf(aux) == -1){
-                node = new Node(aux, antNumbers);
+            //nodeId = rnd.nextInt(999) + 1000;
+            nodePos = rnd.nextInt(numNodes*2)+1;
+            if(nodeIds.indexOf(nodePos) == -1){
+                node = new Node(nodePos, antNumbers);
                 nodes.add(node);
-                auxArray.add(aux);
+                nodeIds.add(nodePos);
             }            
         }
         
         //Generate clients
         for(int i=0; i<numClients; i++){
             while(true){
-                aux = rnd.nextInt(999) + 1000;
-                if(auxArray.indexOf(aux) == -1){
-                    client = new Client(aux);
+                nodePos = rnd.nextInt(numClients*2)+1;
+                //nodeId = rnd.nextInt(999) + 1000;
+                if(nodeIds.indexOf(nodePos) == -1){
+                    client = new Client(nodePos);
                     clients.add(client);
-                    auxArray.add(aux);
+                    nodeIds.add(nodePos);
                     break;
                 }
             }   
         }
         
         //Generate connections with clients, maximum 4  per client, minimum 2
-        for(int i=0; i<numClients; i++){
-            cons = rnd.nextInt(3) + 2;
-            for(int j=0; j<cons; j++){
+        for(int i=0; i<clients.size(); i++){
+            conections = rnd.nextInt(3) + 2;
+            for(int j=0; j<conections; j++){
                 while(true){
-                    aux = rnd.nextInt(numNodes);
-                    if(clients.get(i).checkConnection(nodes.get(aux).getCode()) == -1){
-                       clients.get(i).addConnection(nodes.get(aux).getCode());
+                    nodePos = getNode(nodes.get(rnd.nextInt(nodes.size())).getId());
+                    //if(nodeId>nodes.size()){
+                    //    System.out.println("WHAT??");
+                    //System.out.println(nodePos);
+                    if(clients.get(i).checkConnection(nodes.get(nodePos).getId()) == -1){
+                       clients.get(i).addConnection(nodes.get(nodePos).getId());
+                       nodes.get(nodePos).addClient(clients.get(i).getId());
                        break;
                     }
+                    //}
                 }
             }
         }
     }
     
-    public void simulate(int cycles, int attackF){
+    public void simulate(int cycles, double attackF, int alarmThreshold) throws Exception{
         
-        int aux;
+        int sender, receipt, alarmCounter, attacker;
+        double auxPacket;
+        ArrayList<Packet> packets = new ArrayList();
+        ArrayList<Node> alertedNodes = new ArrayList();
+        //Node auxNode;
         
         for(int i=0; i<cycles; i++){
             
             //Send packets
             for(int j=0; j<clients.size(); j++){
-                aux = rnd.nextInt();
+                auxPacket = rnd.nextFloat();
                 //Generate an attack by client j
-                if(attackF<aux){
-                    clients.get(j).sendMessage(true);
+                if(attackF<auxPacket){
+                    packets.add(clients.get(j).sendMessage(true));
                 }
+            }
+            
+            //Send packets to nodes
+            alarmCounter = 0;
+            //attacker = 0;
+            for(int k=0; k<packets.size(); k++){
+                //Check message 
+                sender = packets.get(i).getSender();
+                receipt = packets.get(i).getReceiver();
+                //if(){}
+                //Suspect detected
+                if(!nodes.get(getNode(receipt)).checkMessage(sender, packets.get(i).getMessage())){
+                    nodes.get(receipt).addSuspect(sender);
+                    alertedNodes.add(nodes.get(receipt));
+                    numAttacks++;
+                    alarmCounter++;
+                    //Attack detected
+                    if(alarmCounter == alarmThreshold){
+                        attacker = detectAttacker(alertedNodes);
+                        alertedNodes = new ArrayList();
+                    }
+                }
+                numPackets++;
             }
         }
     }
     
-    //Detect Intruder
+    private static int getNode(int nodeId) throws Exception{
+        for(int i=0; i<nodes.size(); i++){
+            if(nodes.get(i).getId() == nodeId){
+                return i;
+            }
+        }
+        
+        throw new Exception("Node not found");
+    }
     
-    //Generate keys
-    public int detectAttacker(ArrayList<Node> alertedNodes) throws Exception{
+    private static int detectAttacker(ArrayList<Node> alertedNodes) throws Exception{
         int keyLen, key, a, max, groupSize;
         boolean keysLock;
         
@@ -112,7 +166,7 @@ public class System {
         Binary binaryAux;
         List suspectList;
         
-        Random rnd = new Random();
+        //Random rnd = new Random();
         
         //Number of bits for representation
         keyLen = (int) Math.ceil(Math.log(alertedNodes.size())/Math.log(2));
@@ -221,9 +275,8 @@ public class System {
         return suspectList.getAttacker();
     }
     
-    private ArrayList<Integer> generateTrail(int max){
+    private static ArrayList<Integer> generateTrail(int max){
         ArrayList<Integer> trail = new ArrayList();
-        Random rnd = new Random();
         int a, b;
         
         a = rnd.nextInt(max);

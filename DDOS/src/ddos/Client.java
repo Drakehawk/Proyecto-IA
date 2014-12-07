@@ -34,20 +34,20 @@ public class Client {
         return id;
     }
     
-    public Message sendMessage(boolean attack){
+    public Packet sendMessage(boolean attack){
         //String messageText = "";
-        Message message;
+        Packet message;
         Random rand = new Random();
         int receiver;
         
         receiver = connections.get(rand.nextInt(connections.size()));
         
         if(attack){
-            message = new Message("Bad", id, receiver);
+            message = new Packet("Bad", id, receiver);
             //messageText = "Bad";
         }
         else{
-            message = new Message("Ok", id, receiver);
+            message = new Packet("Ok", id, receiver);
         }
         return message;
     }

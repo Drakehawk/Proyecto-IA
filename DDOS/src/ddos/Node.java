@@ -14,7 +14,7 @@ import java.util.Random;
  */
 public class Node {
     
-    private final int code;
+    private final int id;
     private final int antNumbers;
     //private int positive, negative;
     //private ArrayList<Integer> connections;
@@ -25,23 +25,15 @@ public class Node {
     private String auxKey;
     //private Expression auxKey;
     
-    public Node(int code, int antNumbers){
-        this.code = code;
+    public Node(int id, int antNumbers){
+        this.id = id;
         //this.positive = 0;
         //this.negative = 0;
         this.antNumbers = antNumbers;
         //this.connections = new ArrayList();  
-        this.clients = new ArrayList();
-        this.suspectList = new ArrayList();
+        clients = new ArrayList();
+        suspectList = new ArrayList();
     }
-
-//    public void setPositive(int positive) {
-//        this.positive = positive;
-//    }
-//
-//    public void setNegative(int negative) {
-//        this.negative = negative;
-//    }
 
     public void setGroupKey(String groupKey) {
         this.groupKey = groupKey;
@@ -50,7 +42,18 @@ public class Node {
     public void setAuxKey(String auxKey) {
         this.auxKey = auxKey;
     }
-        
+    
+    public void addClient(int client){
+        if(clients.isEmpty()){
+            clients.add(client);
+        }
+        for(int i=0; i<clients.size(); i++){
+            if(clients.get(i)>client){
+                clients.add(i, client);
+            }
+        }
+    }
+    
     public void addSuspect(int suspect){
         suspectList.add(suspect);
     }
@@ -59,8 +62,8 @@ public class Node {
         return suspectList;
     }
 
-    public int getCode() {
-        return code;
+    public int getId() {
+        return id;
     }
     
     public boolean checkMessage(int sender, String message){
@@ -70,7 +73,6 @@ public class Node {
         negative = 0;
         ArrayList<Ant> ants = new ArrayList();
         ArrayList<Integer> tempAnts = new ArrayList();
-        //ArrayList<Integer> pheromone = new ArrayList();
         Ant auxAnt;
         Random rand = new Random();
         

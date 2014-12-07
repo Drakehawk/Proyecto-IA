@@ -9,12 +9,12 @@ package ddos;
  *
  * @author Juancho
  */
-public class Message {
+public class Packet {
     
     private final String message;
     private int sender, receiver;
     
-    public Message(String message, int sender, int receiver){
+    public Packet(String message, int sender, int receiver){
         this.message = message;
         this.sender = sender;
         this.receiver = receiver;
