@@ -15,12 +15,16 @@ public class Expression {
     
     private ArrayList<Binary> indexList;
     
+    public Expression(){
+        
+    }
+    
     public Expression(ArrayList indexList){
-        this.indexList = new ArrayList();
+        this.indexList = indexList;
     }
 
     public ArrayList<Binary> getIndexList() {
-        return indexList;
+        return this.indexList;
     }
     
     public void addExpression(Binary expression){
@@ -32,6 +36,8 @@ public class Expression {
         expValue = true;
         
         //AND every value in expression. ej: S1*S2*S3
+        //System.out.println(value);
+        //System.out.println("Index size " + indexList.size());
         for(int i=0; i<indexList.size(); i++){
             expValue = indexList.get(i).getValue(value.charAt(i)) && expValue;
         }
@@ -42,16 +48,24 @@ public class Expression {
     public String evaluateString(String value){
         String expValue;
         expValue = "";
+        int counter = 0;
         
         //Parse expression to binary String with value. ej S1S2S3 => 001
-        for(int i=indexList.size()-1; i>=0; i--){
-            if(indexList.get(i).getValue(value.charAt(i))){
+        //for(int i=indexList.size()-1; i>=0; i--){
+        for(int i=0; i<indexList.size(); i++){
+            if(i>=value.length()){
+                counter = 0;
+            }
+            if(indexList.get(i).getValue(value.charAt(counter))){
                 expValue = expValue.concat("1");
             }
             else{
                 expValue = expValue.concat("0");
             }
+            counter++;
         }
         return expValue;
     }    
 }
+
+ 

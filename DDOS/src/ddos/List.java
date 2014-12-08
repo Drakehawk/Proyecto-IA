@@ -18,6 +18,7 @@ public class List {
     
     public List(){
         this.suspects = new ArrayList();
+        this.counter = new ArrayList();
     }
     
     public List(ArrayList<Integer> suspects, String sign){
@@ -41,12 +42,16 @@ public class List {
     public void addSuspect(ArrayList<Integer> suspects){
         for(int i=0; i<suspects.size(); i++){
             //Add counter to suspect already in the list
-            if(this.suspects.indexOf(suspects.get(i)) != 1){
-                this.counter.set(i, this.counter.get(i)+1);
+//            System.out.println("i " + i);
+//            System.out.println("suspects size " + suspects.size());
+//            System.out.println("counter size " + counter.size());
+            if(this.suspects.indexOf(suspects.get(i)) != -1){
+                this.counter.set(this.suspects.indexOf(suspects.get(i)), this.counter.get(this.suspects.indexOf(suspects.get(i)))+1);
             }
             //Add new suspect to the list
             else{
                 this.suspects.add(suspects.get(i));
+                //System.out.println(this.counter + " Counter");
                 this.counter.add(1);
             }
         }

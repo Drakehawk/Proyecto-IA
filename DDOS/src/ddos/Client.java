@@ -33,6 +33,10 @@ public class Client {
     public int getId() {
         return id;
     }
+
+    public ArrayList<Integer> getConnections() {
+        return connections;
+    }
     
     public Packet sendMessage(boolean attack){
         //String messageText = "";
@@ -44,7 +48,6 @@ public class Client {
         
         if(attack){
             message = new Packet("Bad", id, receiver);
-            //messageText = "Bad";
         }
         else{
             message = new Packet("Ok", id, receiver);

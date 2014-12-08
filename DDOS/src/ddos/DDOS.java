@@ -16,23 +16,26 @@ public class DDOS {
      */
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
-        int numNodes = 10;
-        int numClients = 10;
-        int antNumbers = 5;
-        int cycles = 100;
-        int alarmThreshold = 5;
-        double attackF = 0.3;
+        //Ants cant be greater than client number
+        int numNodes = 100;
+        int numClients = 100;
+        //int antNumbers = 3;
+        int cycles = 15;
+        //Minimum 4 alerted nodes
+        int alarmThreshold = 4;
+        double attackF = 0.2;
         
         
         Simulation simulation;
-        simulation = new Simulation(numNodes, antNumbers, numClients);
+        simulation = new Simulation(numNodes, numClients);
         
         simulation.initalize();
         simulation.simulate(cycles, attackF, alarmThreshold);
         
         
         System.out.println("Packets send: " + simulation.getNumPackets());
-        System.out.println("Attacks detected: " +  simulation.getNumAttacks());
+        System.out.println("Attacks send: " +  simulation.getNumAttacks());
+        System.out.println("Attacks detected: " +  simulation.getNumAttacksDetected());
         
     }
     

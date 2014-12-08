@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class Ant {
     
     //private int energy, positive, negative;
-    private int energy, pheromone;
+    private int energy, pheromone, nodes;
     private static ArrayList<Expression> expressions;
     
     //private ArrayList<Integer> pheromone;
@@ -26,11 +26,12 @@ public class Ant {
         this.pheromone = 0;
     }
     
-    public Ant(ArrayList<Expression> expressions, ArrayList<String> truthTable, ArrayList<Integer> trail){
+    public Ant(ArrayList<Expression> expressions, ArrayList<String> truthTable, ArrayList<Integer> trail, int nodes){
         this.energy = 0;
         this.expressions = expressions;
         this.truthTable = truthTable;
         this.trail = trail;
+        this.nodes = nodes;
     }
     
     public void setEnergy(int energy) {
@@ -62,12 +63,21 @@ public class Ant {
         return true;
     }
     
+    //Temporal solution method for package detection
+    public void calculateEnergySuspect (int suspect){
+        if(pheromone == suspect) energy = 0;
+        
+        else if(pheromone < suspect) energy = 1; 
+        
+        else energy = -1;
+    }
+    
     //Calculate energy and update trail if solution not found
     public int updateTrail(){
         int energyAux = 0;
         int counterTrail = 0;
-        int start;
-        int end;
+        int start, end;
+        
         Expression auxExp;
         ArrayList<Integer> auxTrail;
        
@@ -78,20 +88,30 @@ public class Ant {
         //Update trail
         else{
             while(energy > energyAux){
+                //System.out.println("TSTS");
                 if(counterTrail < trail.size()){
                     //Select trail index to replace in current trail. ej {2,5}
                     //Replaces 2 with 0 or 1 and replaces 5 with 6 or more
+                    //First value
                     if(counterTrail == 0){
+                        //System.out.println("counter 000 " + counterTrail);
                         start = 0;
                         end = trail.get(1);
                     }
-                    if(counterTrail == trail.size()-1){
-                        start = trail.get(trail.indexOf(counterTrail) - 1);
-                        end = expressions.size();
-                    }
                     else{
-                        start = trail.get(trail.indexOf(counterTrail) - 1);
-                        end = trail.get(trail.indexOf(counterTrail) + 1);
+                        //Last value
+                        if(counterTrail == trail.size()-1){
+                            //System.out.println("counter " + counterTrail);
+                            //System.out.println("Trail " + trail.size());
+                            start = trail.get(counterTrail - 1);
+                            end = expressions.size();
+                        }
+                        //Intermediate value
+                        else{
+                            //System.out.println("counter " + counterTrail);
+                            start = trail.get(counterTrail - 1);
+                            end = trail.get(counterTrail + 1);
+                        }
                     }
                     auxTrail = trail;
                     for(int i=start; i<end; i++){
@@ -109,27 +129,19 @@ public class Ant {
                 }
                 //Add new expression
                 else{
-                    for(int i=0; i<trail.size(); i++){
+                    energyAux = nodes;
+                    /*for(int i=0; i<trail.size(); i++){
                        if(trail.get(i) != i){
                            trail.add(i,i);
                            counterTrail = 0;
                            energyAux = calculateEnergyBoolean(trail);
                        }
-                    }
+                    }*/
                 }
             }
             energy = energyAux;
         }
         return energy;
-    }
-    
-    //Temporal solution method for package detection
-    public void calculateEnergySuspect (int suspect){
-        if(pheromone == suspect) energy = 0;
-        
-        else if(pheromone < suspect) energy = 1; 
-        
-        else energy = -1;
     }
     
     //Temporal solution method for boolean optimization
