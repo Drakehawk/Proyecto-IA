@@ -39,7 +39,9 @@ public class Expression {
         //System.out.println(value);
         //System.out.println("Index size " + indexList.size());
         for(int i=0; i<indexList.size(); i++){
-            expValue = indexList.get(i).getValue(value.charAt(i)) && expValue;
+            if(indexList.get(i).getIndex() == i){
+                expValue = indexList.get(i).getValue(value.charAt(i)) && expValue;
+            }
         }
         
         return expValue;

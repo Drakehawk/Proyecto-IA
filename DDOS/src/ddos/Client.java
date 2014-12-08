@@ -14,11 +14,13 @@ import java.util.Random;
  */
 public class Client {
     
-    private final int id;
+    private int id;
+    private boolean mutate;
     private ArrayList<Integer> connections;
     
     public Client(int id){
         this.id = id;
+        this.mutate = false;
         this.connections = new ArrayList();
     }
 
@@ -33,6 +35,16 @@ public class Client {
     public int getId() {
         return id;
     }
+    
+//    public boolean isMutate() {
+//        return mutate;
+//    }
+    
+    public void notifyBlock(){
+        Random rnd = new Random();
+        id = rnd.nextInt() + 4;
+        //mutate = true;
+    }
 
     public ArrayList<Integer> getConnections() {
         return connections;
@@ -41,10 +53,11 @@ public class Client {
     public Packet sendMessage(boolean attack){
         //String messageText = "";
         Packet message;
-        Random rand = new Random();
+        Random rnd = new Random();
+        
         int receiver;
         
-        receiver = connections.get(rand.nextInt(connections.size()));
+        receiver = connections.get(rnd.nextInt(connections.size()));
         
         if(attack){
             message = new Packet("Bad", id, receiver);

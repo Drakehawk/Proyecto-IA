@@ -15,24 +15,23 @@ import java.util.Random;
 public class Node {
     
     private final int id;
-    //private final int antNumbers;
     //private int positive, negative;
     //private ArrayList<Integer> connections;
     private ArrayList<Integer> clients;
-    private static ArrayList<Integer> suspectList;
+    private ArrayList<Integer> suspectList;
+    private ArrayList<Integer> blockedConnections;
     //private Expression groupKey;
-    private static String groupKey;
+    private String groupKey;
     private String auxKey;
     //private Expression auxKey;
     
     public Node(int id){
         this.id = id;
-        //this.positive = 0;
-        //this.negative = 0;
-        //this.antNumbers = 0;
-        //this.connections = new ArrayList();  
-        clients = new ArrayList();
-        suspectList = new ArrayList();
+        this.groupKey = "";
+        this.auxKey = "";
+        this.clients = new ArrayList();
+        this.suspectList = new ArrayList();
+        this.blockedConnections = new ArrayList();
     }
 
     public void setGroupKey(String groupKey) {
@@ -67,6 +66,14 @@ public class Node {
         suspectList.add(suspect);
     }
     
+    public void blockConnection(int attacker){
+        blockedConnections.add(attacker);
+    }    
+    
+    public boolean checkBlocked(int id){
+        return blockedConnections.indexOf(id) == -1;
+    }
+    
     public ArrayList<Integer> getSuspect(){
         return suspectList;
     }
@@ -78,7 +85,10 @@ public class Node {
     public ArrayList<Integer> getClients() {
         return clients;
     }
-    
+
+    public String getAuxKey() {
+        return auxKey;
+    }
     
     public boolean checkMessage(int sender, String message){
         int aux, antNumbers;
@@ -90,18 +100,13 @@ public class Node {
         Ant auxAnt;
         Random rnd = new Random();
         
-        //int auxP = (int)(Math.ceil(clients.size()/3))+1;
-        //System.out.println("AUX "+ auxP);
-        //antNumbers = rnd.nextInt(auxP);
         antNumbers = rnd.nextInt((int)(Math.ceil(clients.size()/3))+1)+1;
-        //System.out.println("Ants "+ antNumbers);
+        
         //Generate random ants
         while(ants.size()<antNumbers){
-            //System.out.println("Aux: "+aux);
             aux = rnd.nextInt(clients.size());
             auxAnt = new Ant();
             if(tempAnts.indexOf(aux) == -1){
-                //System.out.println("NOPE");
                 auxAnt.setPheromone(clients.get(aux));
                 auxAnt.calculateEnergySuspect(sender);
                 ants.add(auxAnt);
@@ -111,8 +116,6 @@ public class Node {
         
         //Check sender Id in ruleset
         for(int i=0; i<ants.size(); i++){
-            /*System.out.println("Ants: " + ants.size());
-            System.out.println("Pheromone: " + ants.get(i).getPheromone());*/
             if(ants.get(i).getEnergy() == 0){
                 return "Ok".equals(message);
             }
@@ -129,10 +132,7 @@ public class Node {
                 }
             }
         }
-        //System.out.println("Why");
-        //System.out.println(positive + " " + negative);
         if(binarySearch(sender, positive, negative)){
-        //System.out.println("But it's ok?");
             return "Ok".equals(message);
         }
         return false; 
@@ -141,19 +141,11 @@ public class Node {
     public boolean binarySearch(int value, int left, int right){
         int middle;
         if(left > right){
-            //System.out.println("False");
-            //System.out.println("Value: " + value);
-            //System.out.println(clients);
             return false;
         }
         middle = (int) (Math.floor((left+right)/2));
-        /*System.out.println("ValueS: " + value);
-        System.out.println("Left " + left);
-        System.out.println("Right " + right);
-        System.out.println("Middle " + middle);
-        System.out.println(clients);*/
+        
         if(clients.get(middle) > value){
-            //System.out.println(clients.get(middle));
             return binarySearch(value, left, middle-1);
         }
         if(clients.get(middle) < value){
@@ -173,28 +165,41 @@ public class Node {
     
     public static String cypher(String message, String key) throws Exception{
         String cypherMessage = "";
-        int counter = 0;
-        //System.out.println("Aux key: " + key);
+        String aux = "";
+        //int counter = 0;
+        
         if(message.length()>=key.length()){
-            for(int i=0; i<message.length(); i++){   
-                if(i>=key.length()){
-                    counter = 0;
+            
+            for(int i=0; i<message.length(); i++){
+                if(message.length()>key.length()){
+                    aux = "0";
+                    key = aux.concat(key);
                 }
-                if(message.charAt(i) == key.charAt(counter)){
-                    cypherMessage = cypherMessage.concat("0");
+                else{
+                    break;
+                }
+            }
+            
+            for(int i=0; i<message.length(); i++){   
+
+                if(i<key.length()){
+                    if(message.charAt(i) == key.charAt(i)){
+                        cypherMessage = cypherMessage.concat("0");
+                    }
+                    else{
+                        cypherMessage = cypherMessage.concat("1");
+                    }
                 }
                 else{
                     cypherMessage = cypherMessage.concat("1");
                 }
-                counter++;
             }
         }
         else{
             throw new Exception("Cypher error: Key is bigger than message");
         }
-//        System.out.println("Cypher: " + cypherMessage);
-//        System.out.println("Groupkey: " + groupKey);
-        return groupKey; 
+ 
+        return cypherMessage;
     }
     
 }

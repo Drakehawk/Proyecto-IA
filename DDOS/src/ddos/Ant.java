@@ -80,13 +80,15 @@ public class Ant {
         
         Expression auxExp;
         ArrayList<Integer> auxTrail;
-       
+        //System.out.println("Exit2");
         //First evaluation
         if(energy == 0){
+            //System.out.println("Exit3");
             energy = calculateEnergyBoolean(trail);
         }
         //Update trail
         else{
+            //System.out.println("Exit");
             while(energy > energyAux){
                 //System.out.println("TSTS");
                 if(counterTrail < trail.size()){
@@ -94,15 +96,12 @@ public class Ant {
                     //Replaces 2 with 0 or 1 and replaces 5 with 6 or more
                     //First value
                     if(counterTrail == 0){
-                        //System.out.println("counter 000 " + counterTrail);
                         start = 0;
                         end = trail.get(1);
                     }
                     else{
                         //Last value
                         if(counterTrail == trail.size()-1){
-                            //System.out.println("counter " + counterTrail);
-                            //System.out.println("Trail " + trail.size());
                             start = trail.get(counterTrail - 1);
                             end = expressions.size();
                         }
@@ -126,10 +125,12 @@ public class Ant {
                         }
                     }
                     counterTrail++;
+                    //System.out.println("Exit");
                 }
                 //Add new expression
                 else{
                     energyAux = nodes;
+                    //System.out.println("Exit");
                     /*for(int i=0; i<trail.size(); i++){
                        if(trail.get(i) != i){
                            trail.add(i,i);
@@ -141,6 +142,7 @@ public class Ant {
             }
             energy = energyAux;
         }
+        //System.out.println("Sali");
         return energy;
     }
     
@@ -162,7 +164,7 @@ public class Ant {
                 counter++;
             }
         }
-   
+        //System.out.println("Exito");
         return counter;
     }
     

@@ -11,26 +11,32 @@ package ddos;
  */
 public class Server {
     
-    private final int id, maxCounter;
-    private int attackCounter;
+    private final int id;
+    private int suspectCounter;
     private int requestCounter;
     
     public Server(int id){
         this.id = id;
-        this.maxCounter = 1000;
-        this.attackCounter = 0;
+        this.suspectCounter = 0;
         this.requestCounter = 0;
     }
 
     public int getId() {
         return id;
     }
+
+    public int getAttackCounter() {
+        return suspectCounter;
+    }
+
+    public int getRequestCounter() {
+        return requestCounter;
+    }
     
-    public boolean countMessages(String message){
-        this.requestCounter++;
-        if(message.equals("Bad")){
-            this.attackCounter++;
+    public void receivePacket(Packet packet){
+        if(packet.getMessage().equals("Bad")){
+            suspectCounter++;
         }
-        return attackCounter != maxCounter;
+        requestCounter++;
     }
 }
