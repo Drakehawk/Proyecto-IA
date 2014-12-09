@@ -15,11 +15,11 @@ public class Ant {
     
     //private int energy, positive, negative;
     private int energy, pheromone, nodes;
-    private static ArrayList<Expression> expressions;
+    private ArrayList<Expression> expressions;
     
     //private ArrayList<Integer> pheromone;
     private ArrayList<Integer> trail;
-    private static ArrayList<String> truthTable;
+    private ArrayList<String> truthTable;
     
     public Ant(){
         this.energy = 0;
@@ -83,7 +83,6 @@ public class Ant {
         //System.out.println("Exit2");
         //First evaluation
         if(energy == 0){
-            //System.out.println("Exit3");
             energy = calculateEnergyBoolean(trail);
         }
         //Update trail
@@ -147,7 +146,7 @@ public class Ant {
     }
     
     //Temporal solution method for boolean optimization
-    public static int calculateEnergyBoolean(ArrayList<Integer> trail){
+    public int calculateEnergyBoolean(ArrayList<Integer> trail){
         ArrayList<Expression> auxExpression = new ArrayList();
         String nodeValue;
         int counter = 0;
@@ -168,7 +167,7 @@ public class Ant {
         return counter;
     }
     
-    public static boolean evaluate(String value, ArrayList<Expression> expressions){
+    public boolean evaluate(String value, ArrayList<Expression> expressions){
         
         //Expression auxExp;
         Boolean result = false;

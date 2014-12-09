@@ -13,25 +13,30 @@ public class DDOS {
 
     /**
      * @param args the command line arguments
+     * @throws java.lang.Exception
      */
     public static void main(String[] args) throws Exception {
-        // TODO code application logic here
-        //Ants cant be greater than client number
+        
         int numNodes = 100;
         int numClients = 100;
-        //int antNumbers = 3;
         int cycles = 60;
+        int attackCounter = 3;
+        
         //Minimum 4 alerted nodes
         int alarmThreshold = 4;
+        int mode = 0;
+        int maxConnections = 10;
         double attackF = 0.2;
+        double attackers = 0.4;
+        boolean mutation = false;
         
         Simulation simulation;
-        simulation = new Simulation(numNodes, numClients);
+        simulation = new Simulation(numNodes, numClients, mode, cycles, attackF, attackers, alarmThreshold, attackCounter, mutation, maxConnections);
         simulation.initalize();
-        System.out.println("Test");
-        simulation.simulate(cycles, attackF, alarmThreshold);
+        //System.out.println("Test");
+        simulation.simulate();
         
-        
+        System.out.println("Mode: " + mode + "\n\n\n ");
         System.out.println("Packets send: " + simulation.getNumPackets());
         System.out.println("Packets received: " + simulation.getNumPacketsReceived());
         System.out.println("Suspect packets send: " +  simulation.getNumSuspects());

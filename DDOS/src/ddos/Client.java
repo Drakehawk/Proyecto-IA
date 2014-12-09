@@ -16,12 +16,14 @@ public class Client {
     
     private int id;
     private boolean mutate;
+    private boolean synchronize;
     private ArrayList<Integer> connections;
     
-    public Client(int id){
+    public Client(int id, boolean synchronize){
         this.id = id;
         this.mutate = false;
         this.connections = new ArrayList();
+        this.synchronize = synchronize;
     }
 
     public void addConnection(int node) {
@@ -42,7 +44,7 @@ public class Client {
     
     public void notifyBlock(){
         Random rnd = new Random();
-        id = rnd.nextInt() + 4;
+        id = rnd.nextInt() + 3;
         //mutate = true;
     }
 
@@ -50,21 +52,31 @@ public class Client {
         return connections;
     }
     
-    public Packet sendMessage(boolean attack){
+    public Packet sendMessage(boolean attack, boolean signal){
         //String messageText = "";
         Packet message;
         Random rnd = new Random();
         
-        int receiver;
-        
-        receiver = connections.get(rnd.nextInt(connections.size()));
-        
-        if(attack){
-            message = new Packet("Bad", id, receiver);
+        //int receiver;
+        //receiver = connections.get(rnd.nextInt(connections.size()));
+        //Synchronize mode
+        if(synchronize){
+            if(signal){
+                message = new Packet("Bad", id, connections.get(rnd.nextInt(connections.size())));
+            }else{
+                message = new Packet("Ok", id, connections.get(rnd.nextInt(connections.size())));
+            }
+            return message;
         }
+        //Asynchronize mode
         else{
-            message = new Packet("Ok", id, receiver);
+            if(attack){
+                message = new Packet("Bad", id, connections.get(rnd.nextInt(connections.size())));
+            }
+            else{
+                message = new Packet("Ok", id, connections.get(rnd.nextInt(connections.size())));
+            }
+            return message;
         }
-        return message;
     }
 }

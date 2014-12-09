@@ -13,19 +13,34 @@ import java.util.Random;
  * @author Juancho
  */
 public class Simulation {
-    static ArrayList<Node> nodes;
-    static ArrayList<Client> clients;
+    ArrayList<Node> nodes;
+    ArrayList<Client> clients;
     
     Server server;
     Node node;
     Client client;
+    int mode;
     static Random rnd = new Random();
     
     private int numNodes, numClients, numSuspects, numAttacks, numPackets, numPacketsReceived, numAttacksDetected, numPacketsDropped, numAttacksReceived;
+    private int cycles;
+    private int attackTime;
+    private int alarmThreshold;
+    private int attackCounter;
+    private int maxConnections;
+    private double attackers;
+    private double attackF;
+    private boolean mutation;
     
-    public Simulation(int nodes, int numClients){
-        Simulation.nodes = new ArrayList();
-        Simulation.clients = new ArrayList();
+    public Simulation(int nodes, int numClients, int mode, int cycles, double attackF, double attackers, int alarmThreshold, int attackCounter, boolean mutation, int maxConnections){
+        this.nodes = new ArrayList();
+        this.clients = new ArrayList();
+        this.mode = mode;
+        this.cycles = cycles;
+        this.attackF = attackF;
+        this.attackers = attackers;
+        this.alarmThreshold = alarmThreshold;
+        this.attackCounter = attackCounter;
         this.numNodes = nodes;
         this.numAttacks = 0;
         this.numSuspects = 0;
@@ -34,6 +49,8 @@ public class Simulation {
         this.numPacketsDropped = 0;
         this.numAttacksReceived = 0;
         this.numClients = numClients;
+        this.mutation = mutation;
+        this.maxConnections = maxConnections;
     }
 
     public int getNumSuspects() {
@@ -65,39 +82,42 @@ public class Simulation {
     }
      
     public void initalize() throws Exception{
-        int nodePos, conections;
-        ArrayList<Integer> nodeIds = new ArrayList();
+        int nodeId, clientId, nodePos, conections;
+        ArrayList<Integer> generatedIds = new ArrayList();
+
+        //Server creation. It always will be id 1
         
-//        numAttacks = 0;
-//        numSuspects = 0;
-//        numPackets = 0; 
-//        numPacketsDropped = 0;
-        //Server creation. It alwas will be id 1
-        //nodeId = rnd.nextInt(999) + 1000;
-        //nodeId = rnd.nextInt(999) + 1000;
         server = new Server(1);
-        //nodeIds.add(nodeId);
         
         //Generate nodes
         for(int i=0; i<numNodes; i++){
             //nodeId = rnd.nextInt(999) + 1000;
-            nodePos = rnd.nextInt(numNodes*2)+1;
-            if(nodeIds.indexOf(nodePos) == -1){
-                node = new Node(nodePos);
+            nodeId = rnd.nextInt(numNodes*2)+1;
+            if(generatedIds.indexOf(nodeId) == -1){
+                node = new Node(nodeId);
                 nodes.add(node);
-                nodeIds.add(nodePos);
+                generatedIds.add(nodeId);
             }            
         }
         
         //Generate clients
         for(int i=0; i<numClients; i++){
             while(true){
-                nodePos = rnd.nextInt(numClients*2)+1;
-                //nodeId = rnd.nextInt(999) + 1000;
-                if(nodeIds.indexOf(nodePos) == -1){
-                    client = new Client(nodePos);
+                clientId = rnd.nextInt(numClients*2)+1;
+                if(generatedIds.indexOf(clientId) == -1){
+                    if(mode == 0){
+                        client = new Client(clientId, false);
+                    }
+                    if(mode == 1){
+                        if(rnd.nextDouble()< attackers ){
+                            client = new Client(clientId, true);
+                        }
+                        else{
+                            client = new Client(clientId, false);
+                        }
+                    }
                     clients.add(client);
-                    nodeIds.add(nodePos);
+                    generatedIds.add(clientId);
                     break;
                 }
             }   
@@ -105,8 +125,14 @@ public class Simulation {
         
         //Generate connections with clients, maximum 4  per client, minimum 2
         for(int i=0; i<clients.size(); i++){
-            conections = 5;    
-            //conections = rnd.nextInt(3) + 1;
+            //conections = 5;    
+            if(numNodes<maxConnections){
+                conections = rnd.nextInt(numNodes) + 1;
+            }
+            else{
+                conections = rnd.nextInt(maxConnections) + 1; 
+            }
+            
             for(int j=0; j<conections; j++){
                 while(true){
                     nodePos = getNode(nodes.get(rnd.nextInt(nodes.size())).getId());
@@ -118,29 +144,49 @@ public class Simulation {
                     }
                 }
             }
-            //System.out.println("Clients");
         }
     }
     
-    public void simulate(int cycles, double attackF, int alarmThreshold) throws Exception{
+    public void simulate() throws Exception{
         
-        int alarmCounter, attacker;
-        double auxPacket;
+        int alarmCounter, attacker, attackWave;
+        double auxPacket, signal;
         ArrayList<Packet> packets = new ArrayList();
         ArrayList<Node> alertedNodes = new ArrayList();
         
+        attackWave = 0;
         for(int i=0; i<cycles; i++){
             
             //Send packets
+            signal = rnd.nextFloat();
             for(int j=0; j<clients.size(); j++){
                 auxPacket = rnd.nextFloat();
                 //Generate an attack by client j
-                if(auxPacket<attackF && attackF != 0){
-                    packets.add(clients.get(j).sendMessage(true));
-                    System.out.println(packets.get(j).getMessage());
+                //Asynchronize mode
+                if(mode == 0){
+                    if(auxPacket<attackF){
+                        packets.add(clients.get(j).sendMessage(true, false));
+                        //System.out.println(packets.get(j).getMessage());
+                    }
+                    else{
+                        packets.add(clients.get(j).sendMessage(false, false));
+                    }
                 }
-                else{
-                    packets.add(clients.get(j).sendMessage(false));
+                //Synchronize mode
+                if(mode == 1){
+                    if(attackWave > 0){
+                        packets.add(clients.get(j).sendMessage(false, true)); 
+                        attackWave--;
+                    }
+                    else{
+                        if(signal<attackF){
+                            packets.add(clients.get(j).sendMessage(false, true));
+                            attackWave = attackCounter;
+                        }
+                        else{
+                            packets.add(clients.get(j).sendMessage(false, false));
+                        }
+                    }
                 }
             }
             
@@ -157,18 +203,6 @@ public class Simulation {
                         nodes.get(getNode(packets.get(k).getReceiver())).addSuspect(packets.get(k).getSender());
                         alertedNodes.add(nodes.get(getNode(packets.get(k).getReceiver())));
                         alarmCounter++;
-                        //Attack detected
-//                        if(alarmCounter == alarmThreshold){
-//                            System.out.println("ATTACK");
-//                            attacker = detectAttacker(alertedNodes);
-//                            for(Node nodeAlerted: alertedNodes){
-//                                nodeAlerted.blockConnection(attacker);
-//                            }
-//                            alertedNodes = new ArrayList();
-//                            alarmCounter = 0;
-//                            numAttacks++;
-//                            numAttacksDetected++;
-//                        }
                     }
                     //Send packet to server
                     server.receivePacket(packets.get(k));
@@ -176,14 +210,9 @@ public class Simulation {
                 else{
                     //Packet dropped
                     //Mutate Id
-                    /*int clientAuxPos = getClient(packets.get(k).getSender());
-                    Client clientAux = clients.get(getClient(packets.get(k).getSender()));
-                    clientAux.notifyBlock();
-                    clients.set(clientAuxPos, clientAux);*/
-                    if(getClient(packets.get(k).getSender()) != -1){
+                    if(getClient(packets.get(k).getSender()) != -1 && mutation){
                         clients.get(getClient(packets.get(k).getSender())).notifyBlock();
                     }
-                    //clients.get(getClient(packets.get(k).getSender())).notifyBlock();
                     
                     numAttacks++;
                     numPacketsDropped++;
@@ -203,13 +232,12 @@ public class Simulation {
                 }
                 numPackets++;
             }
-            //alertedNodes = new ArrayList();
         }
         numPacketsReceived = server.getRequestCounter();
         numAttacksReceived = server.getAttackCounter();
     }
     
-    private static int getNode(int nodeId) throws Exception{
+    private int getNode(int nodeId) throws Exception{
         for(int i=0; i<nodes.size(); i++){
             if(nodes.get(i).getId() == nodeId){
                 return i;
@@ -219,7 +247,7 @@ public class Simulation {
         throw new Exception("Node not found");
     }
     
-    private static int getClient(int clientId){
+    private int getClient(int clientId){
         for(int i=0; i<clients.size(); i++){
             if(clients.get(i).getId() == clientId){
                 return i;
@@ -329,18 +357,27 @@ public class Simulation {
 //        System.out.println("alerted nodes: " + alertedNodes.size());
 //        System.out.println("keys size "+keys.size());
         //int auxIs = keys.size()-alertedNodes.size() ; 
-        //System.out.println("alerted: " + auxIs);
+        
+        int keysSize = keys.size();
+        for(int i=0; i<keysSize; i++){
+            if(keys.size()>alertedNodes.size()){
+                keys.remove(keys.size()-1);
+            }
+        }
+        
+        //System.out.println("keys: " + keys.size());
+        //System.out.println("nodes size: " + alertedNodes.size());
         groupSize = (int)(Math.floor(alertedNodes.size()/keys.size()))-1;
         key = 0;
         //max = (int)(Math.pow(2,expressions.get(keys.get(key)).getIndexList().size()))-1;
         //System.out.println("New Group");
-        ArrayList<String> keysP = new ArrayList();
+        //ArrayList<String> keysP = new ArrayList();
         rndAux = rnd.nextInt((int)(Math.pow(2,expressions.get(keys.get(key)).getIndexList().size()))-1);
         for(int i=0; i<alertedNodes.size(); i++){            
             //max = (int)(Math.pow(2,expressions.get(keys.get(key)).getIndexList().size()))-1;
             //rndAux = rnd.nextInt(max);
             //System.out.println("Random 1 "+ rndAux);
-            //System.out.println("Size "+ expressions.get(keys.get(key)).getIndexList().size());
+            //System.out.println("Size "+ expressions.get(keys.get(key)).getIndexList().size
             if(i%groupSize == 0 && i != 0){
                 key++;
                 rndAux = rnd.nextInt(max);
@@ -363,7 +400,7 @@ public class Simulation {
             //System.out.println("Random aux " + rndAux);
             //System.out.println("Key " + keys.get(key) + " i: " +i);
             //System.out.println("Real value " + expressions.get(keys.get(key)).evaluateString(toBinaryStringOfLength(rndAux,0)));
-            keysP.add(expressions.get(keys.get(key)).evaluateString(toBinaryStringOfLength(rndAux,0)));
+            //keysP.add(expressions.get(keys.get(key)).evaluateString(toBinaryStringOfLength(rndAux,0)));
             alertedNodes.get(i).setAuxKey(expressions.get(keys.get(key)).evaluateString(toBinaryStringOfLength(rndAux,0)));
             //System.out.println("Aux keys " + alertedNodes.get(i).getAuxKey() + " i: " + i);
             //System.out.println("\n\n");
