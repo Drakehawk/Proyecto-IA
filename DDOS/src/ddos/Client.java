@@ -38,10 +38,6 @@ public class Client {
         return id;
     }
     
-//    public boolean isMutate() {
-//        return mutate;
-//    }
-    
     public void notifyBlock(){
         Random rnd = new Random();
         id = rnd.nextInt() + 3;
@@ -53,12 +49,10 @@ public class Client {
     }
     
     public Packet sendMessage(boolean attack, boolean signal){
-        //String messageText = "";
+      
         Packet message;
         Random rnd = new Random();
-        
-        //int receiver;
-        //receiver = connections.get(rnd.nextInt(connections.size()));
+   
         //Synchronize mode
         if(synchronize){
             if(signal){

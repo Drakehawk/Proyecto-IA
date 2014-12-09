@@ -50,7 +50,6 @@ public class Simulation {
         this.numSuspectsReceived = 0;
         this.numClients = 0;
         this.mutation = false;
-        //this.maxConnections = 0;
     }
     
     public Simulation(int nodes, int numClients, int mode, int cycles, double attackF, double attackers, int alarmThreshold, int waves, boolean mutation){
@@ -71,7 +70,6 @@ public class Simulation {
         this.numSuspectsReceived = 0;
         this.numClients = numClients;
         this.mutation = mutation;
-        //this.maxConnections = maxConnections;
     }
 
     public void setMode(int mode) {
@@ -183,12 +181,10 @@ public class Simulation {
         for(int i=0; i<clients.size(); i++){
             //conections = 5;    
             if(numNodes<10){
-                //conections = rnd.nextInt(numNodes/2) + 1;
                 connections = 3;
             }
             else{
                 connections = 5;
-                //conections = rnd.nextInt(maxConnections-1) + 1; 
             }
             
             for(int j=0; j<connections; j++){
@@ -224,7 +220,6 @@ public class Simulation {
                 if(mode == 0){
                     if(auxPacket<attackF){
                         packets.add(clients.get(j).sendMessage(true, false));
-                        //System.out.println(packets.get(j).getMessage());
                     }
                     else{
                         packets.add(clients.get(j).sendMessage(false, false));
@@ -278,14 +273,10 @@ public class Simulation {
                 
                 //Attack detected
                 if(alarmCounter == alarmThreshold){
-                    //System.out.println("ATTACK" + " " + k);
                     attacker = detectAttacker(alertedNodes);
                     for(Node nodeAux: nodes){
                         nodeAux.blockConnection(attacker);
                     }
-//                    for(Node nodeAlerted: alertedNodes){
-//                        nodeAlerted.blockConnection(attacker);
-//                    }
                     alertedNodes = new ArrayList();
                     alarmCounter = 0;
                     numAttacks++;
@@ -321,7 +312,7 @@ public class Simulation {
     private static int detectAttacker(ArrayList<Node> alertedNodes) throws Exception{
         int keyLen, key, a, max, rndAux, groupSize;
         boolean keysLock;
-        //System.out.println("alerts "+ alertedNodes.size());
+        
         ArrayList<String> truthTable = new ArrayList();
         ArrayList<Expression> expressions = new ArrayList();
         ArrayList<Integer> keys = new ArrayList();
@@ -352,13 +343,12 @@ public class Simulation {
             binaryAuxList = new ArrayList();
             binaryAuxList.add(new Binary(i, 1));
             expressions.add(new Expression(binaryAuxList));
-            //System.out.println(expressions.size()+ " expS");
         }
         
         //Combine variables
         //KeyLen minimum 2
         for(int i=0; i<keyLen*2; i++){
-            //System.out.println("ssst");
+            
             binaryAux = expressions.get(i).getIndexList().get(0);
             for(int j=i+1; j<keyLen*2; j++){
                 //Obviate same variable combination (S1 * ¬S1) 
@@ -368,9 +358,7 @@ public class Simulation {
                 binaryAuxList = new ArrayList();
                 binaryAuxList.add(binaryAux);
                 binaryAuxList.add(expressions.get(j).getIndexList().get(0));
-                //System.out.println(binaryAuxList + " Binary list");
                 expressions.add(new Expression(binaryAuxList));
-                //System.out.println("Expressions size " + expressions.size() );
             }
         }
         //Solve key problem
@@ -378,7 +366,7 @@ public class Simulation {
         for(int i=0; i<alertedNodes.size(); i++){
             agents.add(new Ant(expressions, truthTable, generateTrail(expressions.size()-1), alertedNodes.size()));
         }
-        //System.out.println("Houweee");
+        
         //Calculate minimun key
         keysLock = false;
         while(!keysLock){
@@ -387,12 +375,9 @@ public class Simulation {
                 if(agents.get(i).updateTrail() == alertedNodes.size()){
                     keys = agents.get(i).getTrail();
                     keysLock = true;
-                    /*System.out.println("Keys" + keys);
-                    System.out.println("Keys size " + keys.size());*/
                     break;
                 }
             }
-            //System.out.println("Houweee");
         }
         
         //Distribute groupKey
@@ -404,21 +389,14 @@ public class Simulation {
             }
         }
         
-        //System.out.println("Group key size "+ groupKeySize);
         a = (int)(Math.pow(2,groupKeySize-1));
         max = (int)(Math.pow(2,groupKeySize));
-        //System.out.println("max " + max +" a "+ a);
         groupKey = toBinaryStringOfLength(rnd.nextInt(max-a)+a+1,0);
-        //System.out.println("GroupKey "+ groupKey);
         for(int i=0; i<alertedNodes.size(); i++){
             alertedNodes.get(i).setGroupKey(groupKey);
         }
 
         //Distribute auxiliary keys
-//        System.out.println("alerted nodes: " + alertedNodes.size());
-//        System.out.println("keys size "+keys.size());
-        //int auxIs = keys.size()-alertedNodes.size() ; 
-        
         int keysSize = keys.size();
         for(int i=0; i<keysSize; i++){
             if(keys.size()>alertedNodes.size()){
@@ -426,86 +404,30 @@ public class Simulation {
             }
         }
         
-        //System.out.println("keys: " + keys.size());
-        //System.out.println("nodes size: " + alertedNodes.size());
         groupSize = (int)(Math.floor(alertedNodes.size()/keys.size()))-1;
         key = 0;
-        //max = (int)(Math.pow(2,expressions.get(keys.get(key)).getIndexList().size()))-1;
-        //System.out.println("New Group");
-        //ArrayList<String> keysP = new ArrayList();
         rndAux = rnd.nextInt((int)(Math.pow(2,expressions.get(keys.get(key)).getIndexList().size()))-1);
         for(int i=0; i<alertedNodes.size(); i++){            
-            //max = (int)(Math.pow(2,expressions.get(keys.get(key)).getIndexList().size()))-1;
-            //rndAux = rnd.nextInt(max);
-            //System.out.println("Random 1 "+ rndAux);
-            //System.out.println("Size "+ expressions.get(keys.get(key)).getIndexList().size
             if(i%groupSize == 0 && i != 0){
                 key++;
                 rndAux = rnd.nextInt(max);
-                //System.out.println("New Group");
             }
             if(key == keys.size()){
                 key = 0;
                 rndAux = rnd.nextInt(max);
-                //System.out.println("Star over");
             }
-            //System.out.println("Random 2 "+ rndAux);
-            //System.out.println("Alerted " + alertedNodes.size());
-            //System.out.println("Expressions " + expressions.size());
-            //System.out.println("max " + max);
-            //System.out.println("Group size " + groupSize);
-            //System.out.println(keys + " Keys");
-            //System.out.println("Aux keys last size " + expressions.get(expressions.size()-1).getIndexList().size());
-            //System.out.println("Aux keys " + expressions.get(keys.get(key)).evaluateString(toBinaryStringOfLength(rndAux,0)));
-            //System.out.println("group "+groupSize);
-            //System.out.println("Random aux " + rndAux);
-            //System.out.println("Key " + keys.get(key) + " i: " +i);
-            //System.out.println("Real value " + expressions.get(keys.get(key)).evaluateString(toBinaryStringOfLength(rndAux,0)));
-            //keysP.add(expressions.get(keys.get(key)).evaluateString(toBinaryStringOfLength(rndAux,0)));
             alertedNodes.get(i).setAuxKey(expressions.get(keys.get(key)).evaluateString(toBinaryStringOfLength(rndAux,0)));
-            //System.out.println("Aux keys " + alertedNodes.get(i).getAuxKey() + " i: " + i);
-            //System.out.println("\n\n");
-            /*System.out.println("Aux keys check ");
-            for(int k=0; k<alertedNodes.size(); k++){
-                System.out.println(alertedNodes.get(k).getAuxKey() + " k: " + k);
-            }
-            System.out.println("\n\n");*/
         }
-        
-//        System.out.println("Aux keys check ");
-//        for(int i=0; i<alertedNodes.size(); i++){
-//            System.out.println(alertedNodes.get(i).getAuxKey() + " i: " + i);
-//        }
-//        int u=0;
-//        for(Node nodeAlerted: alertedNodes){
-//            nodeAlerted.setAuxKey(keysP.get(u));
-//            u
-//        }
-//        
+       
         //Send suspect list
         for(int i=0; i<alertedNodes.size(); i+=groupSize){
             suspectList = new List(alertedNodes.get(i).getSuspect(),alertedNodes.get(i).getSign());
-            //System.out.println("\n\n\n");
-            //System.out.println("Aux key "+alertedNodes.get(i).getAuxKey()+ " i: "+ i);
+            
             for(int j=i+1; j<groupSize+i; j++){
                 //Check suspect list and add own
-                //System.out.println("alerted "+alertedNodes.size());
-                //System.out.println("group "+groupSize);
                 if(j<alertedNodes.size()){
-                    /*System.out.println("\n \n \n ");
-                    System.out.println("j: "+ j);
-                    System.out.println("Aux key "+alertedNodes.get(j).getAuxKey());*/
                     suspectList.addSuspect(alertedNodes.get(j).getSuspect());
                     suspectList.setSign(alertedNodes.get(j).getSign());
-                    /*if(alertedNodes.get(j).checkSign(suspectList.getSign())){
-                        suspectList.addSuspect(alertedNodes.get(j).getSuspect());
-                        suspectList.setSign(alertedNodes.get(j).getSign());
-                    }
-                    else{
-                        //System.out.println("j: "+ j);
-                        //System.out.println("Hallo hallo");
-                        throw new Exception("Invalid suspect List!!!");
-                    }*/
                 }
             }
             suspectListArray.add(suspectList);
@@ -524,7 +446,6 @@ public class Simulation {
     private static ArrayList<Integer> generateTrail(int max){
         ArrayList<Integer> trail = new ArrayList();
         int a, b;
-        //System.out.println("Maxi " + max);
         a = rnd.nextInt(max);
         b = rnd.nextInt(max-a) + a + 1;
         

@@ -80,16 +80,13 @@ public class Ant {
         
         Expression auxExp;
         ArrayList<Integer> auxTrail;
-        //System.out.println("Exit2");
         //First evaluation
         if(energy == 0){
             energy = calculateEnergyBoolean(trail);
         }
         //Update trail
         else{
-            //System.out.println("Exit");
             while(energy > energyAux){
-                //System.out.println("TSTS");
                 if(counterTrail < trail.size()){
                     //Select trail index to replace in current trail. ej {2,5}
                     //Replaces 2 with 0 or 1 and replaces 5 with 6 or more
@@ -124,19 +121,10 @@ public class Ant {
                         }
                     }
                     counterTrail++;
-                    //System.out.println("Exit");
                 }
                 //Add new expression
                 else{
                     energyAux = nodes;
-                    //System.out.println("Exit");
-                    /*for(int i=0; i<trail.size(); i++){
-                       if(trail.get(i) != i){
-                           trail.add(i,i);
-                           counterTrail = 0;
-                           energyAux = calculateEnergyBoolean(trail);
-                       }
-                    }*/
                 }
             }
             energy = energyAux;
@@ -169,11 +157,9 @@ public class Ant {
     
     public boolean evaluate(String value, ArrayList<Expression> expressions){
         
-        //Expression auxExp;
         Boolean result = false;
         
         for(int i=0; i<expressions.size(); i++){
-            //auxExp = expressions.get(i);
             //Calculate OR for expressions. ej: S1S2 + S2S3
             result = result || expressions.get(i).evaluate(value);            
         }

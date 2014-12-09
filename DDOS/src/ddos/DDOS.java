@@ -23,11 +23,11 @@ public class DDOS {
         int waves = 3;
         
         //Minimum 4 alerted nodes
-        int alarmThreshold = 30;
-        int mode = 0;
+        int alarmThreshold = 20;
+        int mode = 1;
         double attackF = 0.2;
         double attackers = 0.4;
-        boolean mutation = false;
+        boolean mutation = true;
         
         Simulation simulation;
         simulation = new Simulation(numNodes, numClients, mode, cycles, attackF, attackers, alarmThreshold, waves, mutation);
@@ -37,7 +37,6 @@ public class DDOS {
         System.out.println("Mode: " + mode + "\n\n\n ");
         System.out.println("Packets send: " + simulation.getNumPackets());
         System.out.println("Packets received: " + simulation.getNumPacketsReceived());
-        System.out.println("Suspect packets send: " +  simulation.getNumSuspects());
         System.out.println("Attacks send: " +  simulation.getNumAttacks());
         System.out.println("Attacks detected: " +  simulation.getNumAttacksDetected());
         System.out.println("Suspects packets received: " +  simulation.getNumSuspectsReceived());

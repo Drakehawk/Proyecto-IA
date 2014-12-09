@@ -36,8 +36,6 @@ public class Expression {
         expValue = true;
         
         //AND every value in expression. ej: S1*S2*S3
-        //System.out.println(value);
-        //System.out.println("Index size " + indexList.size());
         for(int i=0; i<indexList.size(); i++){
             if(indexList.get(i).getIndex() == i){
                 expValue = indexList.get(i).getValue(value.charAt(i)) && expValue;

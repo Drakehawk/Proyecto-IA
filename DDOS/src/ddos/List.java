@@ -42,16 +42,12 @@ public class List {
     public void addSuspect(ArrayList<Integer> suspects){
         for(int i=0; i<suspects.size(); i++){
             //Add counter to suspect already in the list
-//            System.out.println("i " + i);
-//            System.out.println("suspects size " + suspects.size());
-//            System.out.println("counter size " + counter.size());
             if(this.suspects.indexOf(suspects.get(i)) != -1){
                 this.counter.set(this.suspects.indexOf(suspects.get(i)), this.counter.get(this.suspects.indexOf(suspects.get(i)))+1);
             }
             //Add new suspect to the list
             else{
                 this.suspects.add(suspects.get(i));
-                //System.out.println(this.counter + " Counter");
                 this.counter.add(1);
             }
         }
@@ -73,19 +69,5 @@ public class List {
         }
         
         return attacker;
-    }
-    
-//    public int getSuspectCount(int suspect){
-//        int counterSuspect = 0;
-//        
-//        for(int i=0; i<this.suspects.size(); i++){
-//            if(this.suspects.get(i) == suspect){
-//                counterSuspect++;
-//            }
-//        }
-//        
-//        return counterSuspect;
-//    }
-
-    
+    } 
 }

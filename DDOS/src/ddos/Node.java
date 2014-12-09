@@ -15,15 +15,11 @@ import java.util.Random;
 public class Node {
     
     private final int id;
-    //private int positive, negative;
-    //private ArrayList<Integer> connections;
     private ArrayList<Integer> clients;
     private ArrayList<Integer> suspectList;
     private ArrayList<Integer> blockedConnections;
-    //private Expression groupKey;
     private String groupKey;
     private String auxKey;
-    //private Expression auxKey;
     
     public Node(int id){
         this.id = id;
@@ -43,7 +39,7 @@ public class Node {
     }
     
     public void addClient(int client){
-        //System.out.println("client " + client + " "+ this.id);
+        
         boolean insert = false;
         if(clients.isEmpty()){
             clients.add(client);
@@ -121,13 +117,11 @@ public class Node {
             }
             else if(ants.get(i).getEnergy() == 1){
                 if(positive < clients.indexOf(ants.get(i).getPheromone())){
-                    //System.out.println("Why");
                     positive = clients.indexOf(ants.get(i).getPheromone());
                 }
             }
             else if(ants.get(i).getEnergy() == -1){
                 if(negative > clients.indexOf(ants.get(i).getPheromone())){
-                    //System.out.println("Why");
                     negative = clients.indexOf(ants.get(i).getPheromone());
                 }
             }
@@ -166,7 +160,6 @@ public class Node {
     public static String cypher(String message, String key) throws Exception{
         String cypherMessage = "";
         String aux = "";
-        //int counter = 0;
         
         if(message.length()>=key.length()){
             
