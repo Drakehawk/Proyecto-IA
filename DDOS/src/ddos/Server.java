@@ -25,7 +25,7 @@ public class Server {
         return id;
     }
 
-    public int getAttackCounter() {
+    public int getSuspectCounter() {
         return suspectCounter;
     }
 

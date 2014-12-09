@@ -22,17 +22,38 @@ public class Simulation {
     int mode;
     static Random rnd = new Random();
     
-    private int numNodes, numClients, numSuspects, numAttacks, numPackets, numPacketsReceived, numAttacksDetected, numPacketsDropped, numAttacksReceived;
+    private int numNodes, numClients, numSuspects, numAttacks, numPackets, numPacketsReceived, numAttacksDetected, numPacketsDropped, numSuspectsReceived;
     private int cycles;
-    private int attackTime;
+    //private int attackTime;
     private int alarmThreshold;
-    private int attackCounter;
+    private int waves;
     private int maxConnections;
     private double attackers;
     private double attackF;
     private boolean mutation;
     
-    public Simulation(int nodes, int numClients, int mode, int cycles, double attackF, double attackers, int alarmThreshold, int attackCounter, boolean mutation, int maxConnections){
+    public Simulation(){
+        this.nodes = new ArrayList();
+        this.clients = new ArrayList();
+        this.mode = 0;
+        this.cycles = 0;
+        this.attackF = 0;
+        this.attackers = 0;
+        this.alarmThreshold = 0;
+        this.waves = 0;
+        this.numNodes = 0;
+        this.numAttacks = 0;
+        this.numSuspects = 0;
+        this.numPackets = 0; 
+        this.numPacketsReceived = 0; 
+        this.numPacketsDropped = 0;
+        this.numSuspectsReceived = 0;
+        this.numClients = 0;
+        this.mutation = false;
+        //this.maxConnections = 0;
+    }
+    
+    public Simulation(int nodes, int numClients, int mode, int cycles, double attackF, double attackers, int alarmThreshold, int waves, boolean mutation){
         this.nodes = new ArrayList();
         this.clients = new ArrayList();
         this.mode = mode;
@@ -40,19 +61,55 @@ public class Simulation {
         this.attackF = attackF;
         this.attackers = attackers;
         this.alarmThreshold = alarmThreshold;
-        this.attackCounter = attackCounter;
+        this.waves = waves;
         this.numNodes = nodes;
         this.numAttacks = 0;
         this.numSuspects = 0;
         this.numPackets = 0; 
         this.numPacketsReceived = 0; 
         this.numPacketsDropped = 0;
-        this.numAttacksReceived = 0;
+        this.numSuspectsReceived = 0;
         this.numClients = numClients;
         this.mutation = mutation;
-        this.maxConnections = maxConnections;
+        //this.maxConnections = maxConnections;
     }
 
+    public void setMode(int mode) {
+        this.mode = mode;
+    }
+
+    public void setNumNodes(int numNodes) {
+        this.numNodes = numNodes;
+    }
+
+    public void setNumClients(int numClients) {
+        this.numClients = numClients;
+    }
+
+    public void setCycles(int cycles) {
+        this.cycles = cycles;
+    }
+
+    public void setAlarmThreshold(int alarmThreshold) {
+        this.alarmThreshold = alarmThreshold;
+    }
+
+    public void setWaves(int waves) {
+        this.waves = waves;
+    }
+
+    public void setAttackers(double attackers) {
+        this.attackers = attackers;
+    }
+
+    public void setAttackF(double attackF) {
+        this.attackF = attackF;
+    }
+
+    public void setMutation(boolean mutation) {
+        this.mutation = mutation;
+    }
+    
     public int getNumSuspects() {
         return numSuspects;
     }
@@ -77,16 +134,15 @@ public class Simulation {
         return numPacketsReceived;
     }
 
-    public int getNumAttacksReceived() {
-        return numAttacksReceived;
+    public int getNumSuspectsReceived() {
+        return numSuspectsReceived;
     }
      
     public void initalize() throws Exception{
-        int nodeId, clientId, nodePos, conections;
+        int nodeId, clientId, nodePos, connections;
         ArrayList<Integer> generatedIds = new ArrayList();
 
         //Server creation. It always will be id 1
-        
         server = new Server(1);
         
         //Generate nodes
@@ -126,14 +182,16 @@ public class Simulation {
         //Generate connections with clients, maximum 4  per client, minimum 2
         for(int i=0; i<clients.size(); i++){
             //conections = 5;    
-            if(numNodes<maxConnections){
-                conections = rnd.nextInt(numNodes) + 1;
+            if(numNodes<10){
+                //conections = rnd.nextInt(numNodes/2) + 1;
+                connections = 3;
             }
             else{
-                conections = rnd.nextInt(maxConnections) + 1; 
+                connections = 5;
+                //conections = rnd.nextInt(maxConnections-1) + 1; 
             }
             
-            for(int j=0; j<conections; j++){
+            for(int j=0; j<connections; j++){
                 while(true){
                     nodePos = getNode(nodes.get(rnd.nextInt(nodes.size())).getId());
                    
@@ -181,7 +239,7 @@ public class Simulation {
                     else{
                         if(signal<attackF){
                             packets.add(clients.get(j).sendMessage(false, true));
-                            attackWave = attackCounter;
+                            attackWave = waves;
                         }
                         else{
                             packets.add(clients.get(j).sendMessage(false, false));
@@ -234,7 +292,7 @@ public class Simulation {
             }
         }
         numPacketsReceived = server.getRequestCounter();
-        numAttacksReceived = server.getAttackCounter();
+        numSuspectsReceived = server.getSuspectCounter();
     }
     
     private int getNode(int nodeId) throws Exception{
