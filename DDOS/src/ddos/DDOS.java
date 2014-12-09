@@ -17,23 +17,21 @@ public class DDOS {
      */
     public static void main(String[] args) throws Exception {
         
-        int numNodes = 10;
-        int numClients = 10;
-        int cycles = 10;
-        int waves = 1;
+        int numNodes = 100;
+        int numClients = 100;
+        int cycles = 50;
+        int waves = 3;
         
         //Minimum 4 alerted nodes
-        int alarmThreshold = 4;
+        int alarmThreshold = 30;
         int mode = 0;
-        //int maxConnections = 10;
-        double attackF = 0.1;
+        double attackF = 0.2;
         double attackers = 0.4;
         boolean mutation = false;
         
         Simulation simulation;
         simulation = new Simulation(numNodes, numClients, mode, cycles, attackF, attackers, alarmThreshold, waves, mutation);
         simulation.initalize();
-        //System.out.println("Test");
         simulation.simulate();
         
         System.out.println("Mode: " + mode + "\n\n\n ");
@@ -44,6 +42,7 @@ public class DDOS {
         System.out.println("Attacks detected: " +  simulation.getNumAttacksDetected());
         System.out.println("Suspects packets received: " +  simulation.getNumSuspectsReceived());
         System.out.println("Attacks dropped: " +  simulation.getNumPacketsDropped());     
+        System.out.println("Attacks received: " +  (simulation.getNumAttacks()-simulation.getNumPacketsDropped()));
     }
     
 }

@@ -280,9 +280,12 @@ public class Simulation {
                 if(alarmCounter == alarmThreshold){
                     //System.out.println("ATTACK" + " " + k);
                     attacker = detectAttacker(alertedNodes);
-                    for(Node nodeAlerted: alertedNodes){
-                        nodeAlerted.blockConnection(attacker);
+                    for(Node nodeAux: nodes){
+                        nodeAux.blockConnection(attacker);
                     }
+//                    for(Node nodeAlerted: alertedNodes){
+//                        nodeAlerted.blockConnection(attacker);
+//                    }
                     alertedNodes = new ArrayList();
                     alarmCounter = 0;
                     numAttacks++;
